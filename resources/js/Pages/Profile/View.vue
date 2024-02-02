@@ -8,6 +8,7 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {computed, ref} from "vue";
 import {CheckIcon} from "@heroicons/vue/24/outline"
 import {XMarkIcon, CameraIcon} from "@heroicons/vue/24/solid"
+import DangerButton from "@/Components/DangerButton.vue";
 
 const authUser = usePage().props.auth.user
 const coverImageSrc = ref('')
@@ -126,7 +127,7 @@ function resetAvatarImage() {
                         Update Cover Image
                     </button>
                     <div v-else class="flex gap-2">
-                        <button @click="cancelCoverImage"
+                        <button @click="resetCoverImage"
                                 class="inline-flex bg-gray-50 hover:bg-gray-100 text-gray-800 py-2 px-3 opacity-0 group-hover:opacity-100 text-xs transition-all flex items-center gap-2">
                             <XMarkIcon class="h-4 w-4"/>
                             Cancel
@@ -154,7 +155,7 @@ function resetAvatarImage() {
                         </button>
                         <div v-else class="absolute top-1 right-0 flex flex-col gap-2">
                             <button
-                                @click="cancelAvatarImage"
+                                @click="resetAvatarImage"
                                 class="w-7 h-7 flex items-center justify-center bg-red-500/80 text-white rounded-full">
                                 <XMarkIcon class="h-5 w-5"/>
                             </button>
@@ -168,7 +169,7 @@ function resetAvatarImage() {
                     <div class="flex justify-between items-center flex-1 p-4">
                         <div>
                             <h2 class="font-bold text-lg">{{ user.name }}</h2>
-                            <p class="text-xs text-gray-500">{{ followerCount }} follower(s)</p>
+                            <p class="text-xs text-gray-500">{{ followerCount || 0 }} follower(s)</p>
                         </div>
 
                         <div v-if="!isMyProfile">
@@ -185,9 +186,6 @@ function resetAvatarImage() {
             <div class="">
                 <TabGroup>
                     <TabList class="flex space-x-1 bg-blue-900/20 bg-white ">
-                        <Tab v-slot="{ selected }" as="template" v-if="isMyProfile">
-                            <TabItem text="About" :selected="selected"/>
-                        </Tab>
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
@@ -200,14 +198,12 @@ function resetAvatarImage() {
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Photos" :selected="selected"/>
                         </Tab>
+                        <Tab v-slot="{ selected }" as="template">
+                            <TabItem text="My Profile" :selected="selected"/>
+                        </Tab>
                     </TabList>
 
                     <TabPanels class="mt-2">
-                        <TabPanel
-                            v-if="isMyProfile"
-                            class='shadow'>
-                            <Edit :mustVerifyEmail="mustVerifyEmail" :status="status"/>
-                        </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>
                             Posts
@@ -224,7 +220,11 @@ function resetAvatarImage() {
                             class='shadow bg-white p-5'>
                             Photos
                         </TabPanel>
-
+                        <TabPanel
+                            v-if="isMyProfile"
+                            class='shadow'>
+                            <Edit :mustVerifyEmail="mustVerifyEmail" :status="status"/>
+                        </TabPanel>
                     </TabPanels>
                 </TabGroup>
             </div>

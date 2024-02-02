@@ -63,7 +63,7 @@ const authUser = usePage().props.auth.user
                                 </template>
 
                                 <template #content>
-                                    <DropdownLink :href="route('profile', { user: authUser.username })"> Profile</DropdownLink>
+                                    <DropdownLink :href="route('profile.index', { user: authUser.username })"> Profile</DropdownLink>
                                     <DropdownLink :href="route('logout')" method="post" as="button">
                                         Log Out
                                     </DropdownLink>
@@ -132,7 +132,7 @@ const authUser = usePage().props.auth.user
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile', { user: authUser.username })"> Profile</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('profile.index', { user: authUser.username })"> Profile</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
