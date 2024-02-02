@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -38,11 +39,12 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         if ($cover) {
-            $path = $cover->store("avatars/$user->id", 'public');
+            if ($user->cover_path) {
+                Storage::disk('public')->delete($user->cover_path);
+            }
+            $path = $cover->store("user-$user->id/covers", 'public');
             $user->update(['cover_path' => $path]);
         }
-
-        session('success', 'fdd');
 
         return back()->with('status', 'cover-image-updated');
     }
