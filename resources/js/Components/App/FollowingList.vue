@@ -1,9 +1,6 @@
 <script setup>
 
-import TextInput from "@/Components/TextInput.vue";
 import {ref} from "vue";
-import FollowingItem from "@/Components/App/FollowingItem.vue";
-import GroupItem from "@/Components/App/GroupItem.vue";
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
 import FollowingListItems from "@/Components/App/FollowingListItems.vue";
 

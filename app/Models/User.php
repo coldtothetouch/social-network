@@ -42,7 +42,7 @@ class User extends Authenticatable implements MustVerifyEmail
             ->doNotGenerateSlugsOnUpdate();
     }
 
-    public function getRouteKey(): string
+    public function getRouteKeyName(): string
     {
         return 'username';
     }

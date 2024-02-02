@@ -1,7 +1,6 @@
 <script setup>
 
 import TextInput from "@/Components/TextInput.vue";
-import GroupItem from "@/Components/App/GroupItem.vue";
 import {ref} from "vue";
 import FollowingItem from "@/Components/App/FollowingItem.vue";
 
@@ -18,6 +17,15 @@ const search = ref('');
         <div v-else class="flex flex-col gap-3">
             <FollowingItem image="https://picsum.photos/100"
                            name="Elon Musk"
+            />
+            <FollowingItem image="https://picsum.photos/100"
+                           name="John Doe"
+            />
+            <FollowingItem image="https://picsum.photos/100"
+                           name="John Doe"
+            />
+            <FollowingItem image="https://picsum.photos/100"
+                           name="John Doe"
             />
             <FollowingItem image="https://picsum.photos/100"
                            name="John Doe"
