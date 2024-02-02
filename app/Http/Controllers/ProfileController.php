@@ -32,21 +32,34 @@ class ProfileController extends Controller
             'avatar' => 'nullable|image',
         ]);
 
+        /** @var UploadedFile $avatar */
         $avatar = $data['avatar'] ?? null;
         /** @var UploadedFile $cover */
         $cover = $data['cover'] ?? null;
 
         $user = auth()->user();
 
+        $status = '';
+
         if ($cover) {
             if ($user->cover_path) {
                 Storage::disk('public')->delete($user->cover_path);
             }
-            $path = $cover->store("user-$user->id/covers", 'public');
+            $path = $cover->store("user-$user->id", 'public');
             $user->update(['cover_path' => $path]);
+            $status = 'Cover image updated';
         }
 
-        return back()->with('status', 'cover-image-updated');
+        if ($avatar) {
+            if ($user->avatar_path) {
+                Storage::disk('public')->delete($user->avatar_path);
+            }
+            $path = $avatar->store("user-$user->id", 'public');
+            $user->update(['avatar_path' => $path]);
+            $status = 'Profile avatar updated';
+        }
+
+        return back()->with('status', $status);
     }
 
     public function edit(Request $request): Response
