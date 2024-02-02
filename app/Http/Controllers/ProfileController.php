@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -16,7 +18,33 @@ class ProfileController extends Controller
 {
     public function index(User $user)
     {
-        return Inertia::render('Profile/View', compact('user'));
+        return Inertia::render('Profile/View', [
+            'user' => new UserResource($user),
+            'status' => session('status')
+        ]);
+    }
+
+    public function updateImage(Request $request)
+    {
+        $data = $request->validate([
+            'cover' => 'nullable|image',
+            'avatar' => 'nullable|image',
+        ]);
+
+        $avatar = $data['avatar'] ?? null;
+        /** @var UploadedFile $cover */
+        $cover = $data['cover'] ?? null;
+
+        $user = auth()->user();
+
+        if ($cover) {
+            $path = $cover->store("avatars/$user->id", 'public');
+            $user->update(['cover_path' => $path]);
+        }
+
+        session('success', 'fdd');
+
+        return back()->with('status', 'cover-image-updated');
     }
 
     public function edit(Request $request): Response
