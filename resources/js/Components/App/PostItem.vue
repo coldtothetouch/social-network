@@ -16,7 +16,7 @@ function isImage(attachment) {
     <div class="border p-5 rounded-lg bg-white shadow">
         <div class="flex items-center gap-3 mb-3">
             <a href="javascript:void(0)">
-                <img :src="post.user.avatar" class="w-[65px] rounded-full border border-2 transition-all hover:border-blue-400">
+                <img :src="post.user.avatar_url" class="w-[65px] rounded-full border border-2 transition-all hover:border-blue-400">
             </a>
             <div class="flex flex-col">
 

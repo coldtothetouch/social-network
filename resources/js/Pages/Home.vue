@@ -5,6 +5,11 @@ import FollowingList from "@/Components/App/FollowingList.vue";
 import CreatePost from "@/Components/App/CreatePost.vue";
 import PostList from "@/Components/App/PostList.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+
+defineProps({
+    posts: Object
+})
+
 </script>
 
 <template>
@@ -20,7 +25,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 
             <div class="lg:col-span-6 py-3 px-3 lg:order-2 overflow-hidden flex flex-col">
                 <CreatePost />
-                <PostList />
+                <PostList :posts="posts.data"/>
             </div>
         </div>
     </AuthenticatedLayout>
