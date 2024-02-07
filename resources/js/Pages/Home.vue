@@ -14,7 +14,7 @@ defineProps({
 
 <template>
     <AuthenticatedLayout>
-        <div class="lg:grid lg:grid-cols-12 gap-3  h-full">
+        <div class="lg:grid lg:grid-cols-12 gap-3 h-full flex flex-col">
             <div class="lg:col-span-3 py-3 px-3 lg:order-1 overflow-hidden flex flex-col">
                 <GroupList/>
             </div>
@@ -23,7 +23,7 @@ defineProps({
                 <FollowingList/>
             </div>
 
-            <div class="lg:col-span-6 py-3 px-3 lg:order-2 overflow-hidden flex flex-col">
+            <div class="lg:col-span-6 py-3 px-3 h-full flex-1 lg:order-2 overflow-y-auto flex flex-col">
                 <CreatePost />
                 <PostList :posts="posts.data"/>
             </div>
