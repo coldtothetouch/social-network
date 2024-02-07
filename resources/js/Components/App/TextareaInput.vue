@@ -14,17 +14,24 @@ const props = defineProps({
     }
 })
 
+function adjustHeight() {
+    if (props.autoresize) {
+        input.value.style.height = 'auto'
+        input.value.style.height = input.value.scrollHeight + 'px'
+    }
+}
+
+onMounted(() => {
+    adjustHeight()
+})
+
 const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null);
 
 function onInputChange($event) {
     emit('update:modelValue', $event.target.value)
-
-    if (props.autoresize) {
-        input.value.style.height = 'auto'
-        input.value.style.height = input.value.scrollHeight + 'px'
-    }
+    adjustHeight()
 }
 
 onMounted(() => {

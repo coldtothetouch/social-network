@@ -18,8 +18,9 @@ class PostController extends Controller
         return back();
     }
 
-    public function update(UpdatePostRequest $request)
+    public function update(Post $post, UpdatePostRequest $request): RedirectResponse
     {
-
+        $post->update($request->validated());
+        return back();
     }
 }

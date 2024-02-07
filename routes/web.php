@@ -27,7 +27,7 @@ Route::group([
 
     //Route::get('/user/{user}', 'index')->name('index');
     Route::post('/post/create', 'store')->name('create');
-    //Route::patch('/profile', 'update')->name('update');
+    Route::patch('/post/{post}', 'update')->name('update');
     //Route::delete('/profile', 'destroy')->name('destroy');
 });
 
