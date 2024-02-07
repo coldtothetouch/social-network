@@ -6,6 +6,7 @@ import {
 import {PencilIcon, TrashIcon, EllipsisVerticalIcon} from '@heroicons/vue/20/solid'
 import {ref} from "vue";
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
     post: Object,
@@ -19,6 +20,14 @@ const emit = defineEmits(['editClick'])
 
 function openEditModal() {
     emit('editClick', props.post)
+}
+
+function deletePost() {
+    if (window.confirm('Are you sure to delete this post?')) {
+        router.delete(route('post.destroy', props.post.id), {
+            preserveScroll: true
+        })
+    }
 }
 
 </script>
@@ -49,7 +58,7 @@ function openEditModal() {
                     >
                         <div class="px-1 py-1">
                             <MenuItem v-slot="{ active }">
-                                <button @click="openEditModal()"
+                                <button @click="openEditModal"
                                     :class="[
                   active ? 'bg-gray-100' : '',
                   'group flex w-full items-center rounded-md px-2 py-2 text-sm',
@@ -65,6 +74,7 @@ function openEditModal() {
 
                             <MenuItem v-slot="{ active }">
                                 <button
+                                    @click="deletePost"
                                     :class="[
                                 active ? 'bg-gray-100' : '',
                   'group flex w-full items-center rounded-md px-2 py-2 text-sm',

@@ -25,10 +25,10 @@ Route::group([
     'as' => 'post.',
 ], function () {
 
-    //Route::get('/user/{user}', 'index')->name('index');
+    //Route::get('/post/{post}', 'index')->name('index');
     Route::post('/post/create', 'store')->name('create');
     Route::patch('/post/{post}', 'update')->name('update');
-    //Route::delete('/profile', 'destroy')->name('destroy');
+    Route::delete('/post/{post}', 'destroy')->name('destroy');
 });
 
 require __DIR__.'/auth.php';
