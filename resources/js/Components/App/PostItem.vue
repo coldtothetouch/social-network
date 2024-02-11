@@ -98,10 +98,10 @@ function deletePost() {
             </div>
             <Disclosure v-slot="{ open }" v-else>
 
-                <div v-show="!open" v-html="post.body.substring(0, 255)+'...'"/>
+                <div class="ck-content-output" v-show="!open" v-html="post.body.substring(0, 255)+'...'"/>
 
                 <DisclosurePanel>
-                    <div v-html="post.body"/>
+                    <div class="ck-content-output" v-html="post.body"/>
                 </DisclosurePanel>
 
                 <div class="flex justify-end">

@@ -9,8 +9,10 @@ import {
 } from '@headlessui/vue'
 import TextareaInput from "@/Components/App/TextareaInput.vue";
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
-import {XMarkIcon}from "@heroicons/vue/24/outline"
+import {XMarkIcon} from "@heroicons/vue/24/outline"
 import {useForm} from "@inertiajs/vue3";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
 
 const props = defineProps({
     post: {
@@ -41,8 +43,27 @@ const form = useForm({
     body: '',
 })
 
-function submit() {
+const editor = ClassicEditor
+const editorConfig = {
+    toolbar: [
+        'heading',
+        '|',
+        'bold',
+        'italic',
+        '|',
+        'link',
+        '|',
+        'bulletedList',
+        'numberedList',
+        '|',
+        'outdent',
+        'indent',
+        '|',
+        'blockQuote'
+    ]
+}
 
+function submit() {
     form.patch(route('post.update', props.post.id), {
         preserveScroll: true,
         onSuccess: () => {
@@ -66,7 +87,7 @@ function submit() {
                     leave-from="opacity-100"
                     leave-to="opacity-0"
                 >
-                    <div class="fixed inset-0 bg-black/25" />
+                    <div class="fixed inset-0 bg-black/25"/>
                 </TransitionChild>
 
                 <div class="fixed inset-0 overflow-y-auto">
@@ -100,7 +121,9 @@ function submit() {
 
                                     <div class="mt-2">
                                         <p class="text-sm text-gray-500">
-                                            <TextareaInput v-model="form.body" class="w-full" rows="5"></TextareaInput>
+                                            <ckeditor :editor="editor" v-model="form.body"
+                                                      :config="editorConfig"></ckeditor>
+                                            <!--                                            <TextareaInput v-model="form.body" class="w-full" rows="5"></TextareaInput>-->
                                         </p>
                                     </div>
 
