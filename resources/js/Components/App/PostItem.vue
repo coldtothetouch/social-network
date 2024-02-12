@@ -4,17 +4,13 @@ import {
     Disclosure, DisclosureButton, DisclosurePanel
 } from '@headlessui/vue'
 import {PencilIcon, TrashIcon, EllipsisVerticalIcon} from '@heroicons/vue/20/solid'
-import {ref} from "vue";
+import {isImage} from '@/helpers.js'
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
 import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
     post: Object,
 })
-
-function isImage(attachment) {
-    return attachment.mime.split('/')[0].toLowerCase() === 'image'
-}
 
 const emit = defineEmits(['editClick'])
 
