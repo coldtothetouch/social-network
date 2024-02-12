@@ -94,7 +94,7 @@ function deletePost() {
         </div>
         <div class="overflow-hidden">
             <div v-if="post.body.length < 255">
-                <div v-html="post.body"/>
+                <div class="ck-content-output" v-html="post.body"/>
             </div>
             <Disclosure v-slot="{ open }" v-else>
 

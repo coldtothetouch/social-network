@@ -9,8 +9,6 @@ const search = ref('');
 
 <template>
     <div class="p-5 bg-white rounded-md shadow overflow-hidden flex flex-col">
-
-
         <div class="lg:hidden flex-1 block">
             <Disclosure v-slot="{ open }">
                 <DisclosureButton class="flex items-center w-full justify-between">
@@ -26,7 +24,6 @@ const search = ref('');
                 </DisclosurePanel>
             </Disclosure>
         </div>
-
         <div class="hidden lg:flex flex-col flex-1 h-full">
 
             <h2 class="text-2xl font-bold">My Followings</h2>

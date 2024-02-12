@@ -27,7 +27,7 @@ Route::group([
 
     //Route::get('/post/{post}', 'index')->name('index');
     Route::post('/post/create', 'store')->name('create');
-    Route::patch('/post/{post}', 'update')->name('update');
+    Route::put('/post/{post}', 'update')->name('update');
     Route::delete('/post/{post}', 'destroy')->name('destroy');
 });
 

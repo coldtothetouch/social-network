@@ -7,12 +7,10 @@ import {
     DialogPanel,
     DialogTitle,
 } from '@headlessui/vue'
-import TextareaInput from "@/Components/App/TextareaInput.vue";
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
 import {XMarkIcon} from "@heroicons/vue/24/outline"
 import {useForm} from "@inertiajs/vue3";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
-
 
 const props = defineProps({
     post: {
@@ -64,12 +62,24 @@ const editorConfig = {
 }
 
 function submit() {
-    form.patch(route('post.update', props.post.id), {
-        preserveScroll: true,
-        onSuccess: () => {
-            show.value = false
-        }
-    })
+    if (form.id) {
+        form.put(route('post.update', props.post), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false
+                form.reset()
+            }
+        })
+    }
+    else {
+        form.post(route('post.create'), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false
+                form.reset()
+            }
+        })
+    }
 }
 
 </script>
@@ -110,7 +120,7 @@ function submit() {
                                     as="h3"
                                     class="flex items-center justify-between text-lg font-medium leading-6 text-gray-900 bg-gray-100 p-4"
                                 >
-                                    Edit Post
+                                    {{ post.id ? 'Edit Post' : 'Create Post' }}
                                     <button @click="closeModal" class="hover:bg-gray-200 p-1 rounded-full">
                                         <XMarkIcon class="w-4 h-4"/>
                                     </button>
@@ -123,7 +133,6 @@ function submit() {
                                         <p class="text-sm text-gray-500">
                                             <ckeditor :editor="editor" v-model="form.body"
                                                       :config="editorConfig"></ckeditor>
-                                            <!--                                            <TextareaInput v-model="form.body" class="w-full" rows="5"></TextareaInput>-->
                                         </p>
                                     </div>
 
