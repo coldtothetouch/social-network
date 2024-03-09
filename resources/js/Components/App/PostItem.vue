@@ -3,7 +3,8 @@ import {
     Menu, MenuButton, MenuItems, MenuItem,
     Disclosure, DisclosureButton, DisclosurePanel
 } from '@headlessui/vue'
-import {PencilIcon, TrashIcon, EllipsisVerticalIcon} from '@heroicons/vue/20/solid'
+import {PencilIcon, TrashIcon, EllipsisVerticalIcon, ArrowUpTrayIcon} from '@heroicons/vue/20/solid'
+import {DocumentIcon} from '@heroicons/vue/24/outline'
 import {isImage} from '@/helpers.js'
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
 import {router} from "@inertiajs/vue3";
@@ -32,7 +33,7 @@ function deletePost() {
     <div class="border p-5 rounded-lg bg-white shadow">
         <div class="flex justify-between  items-center mb-3">
             <PostUserHeader :post="post"/>
-            <Menu as="div" class="relative inline-block text-left">
+            <Menu as="div" class="relative inline-block text-left z-10">
                 <div class="rounded-full">
                     <MenuButton
                         class="hover:bg-gray-100 p-2 rounded-full"
@@ -88,7 +89,7 @@ function deletePost() {
                 </transition>
             </Menu>
         </div>
-        <div class="overflow-hidden">
+        <div class="overflow-hidden" v-if="post.body">
             <div v-if="post.body.length < 255">
                 <div class="ck-content-output" v-html="post.body"/>
             </div>
@@ -110,27 +111,22 @@ function deletePost() {
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-3">
-            <template v-for="attachment of post.attachments">
-                <div class="relative group object-cover aspect-square">
+            <template v-for="(attachment, i) of post.attachments.slice(0, 3)">
+                <div class="relative group relative">
+
+                    <div v-if="i === 3" class="absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center text-2xl text-white bg-black/40">
+                        +{{post.attachments.length - 3}} more...
+                    </div>
+
                     <button
                         class="absolute opacity-0 group-hover:opacity-100 transition-all right-5 top-5 h-10 w-10 bg-gray-400 rounded-lg flex justify-center items-center hover:bg-gray-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                             class="w-6 h-6 text-gray-100">
-                            <path fill-rule="evenodd"
-                                  d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z"
-                                  clip-rule="evenodd"/>
-                        </svg>
+                        <ArrowUpTrayIcon class="text-white w-6 h-6"/>
                     </button>
-                    <img v-if="isImage(attachment)" :src="attachment.url" class=" rounded-md">
+
+                    <img v-if="isImage(attachment)" :src="attachment.url" class="object-cover aspect-square rounded-md" :alt="attachment.name">
 
                     <div v-else class="bg-gray-100 h-full flex flex-col items-center justify-center  text-gray-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                             class="w-20 h-20">
-                            <path
-                                d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z"/>
-                            <path
-                                d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z"/>
-                        </svg>
+                        <DocumentIcon class="w-40 h-40"/>
 
                         {{ attachment.name }}
                     </div>

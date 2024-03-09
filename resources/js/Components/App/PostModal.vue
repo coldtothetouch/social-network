@@ -1,5 +1,5 @@
 <script setup>
-import {computed, onMounted, ref, watch} from 'vue'
+import {computed, ref, watch} from 'vue'
 import {
     TransitionRoot,
     TransitionChild,
@@ -28,7 +28,7 @@ watch(() => props.post, () => {
 
 const show = computed({
     get: () => props.modelValue,
-    set: (value) => emit('update:modelValue', false)
+    set: () => emit('update:modelValue', false)
 })
 
 /**
@@ -42,14 +42,15 @@ const attachmentFiles = ref([])
 const emit = defineEmits(['update:modelValue'])
 
 function closeModal() {
-    show.value = false
     form.reset()
+    show.value = false
     attachmentFiles.value = []
 }
 
 const form = useForm({
     id: null,
     body: '',
+    attachments: []
 })
 
 async function onAttachmentChoose(event) {
@@ -103,21 +104,20 @@ const editorConfig = {
 }
 
 function submit() {
+    form.attachments = attachmentFiles.value.map(file => file.file)
     if (form.id) {
         form.put(route('post.update', props.post), {
             preserveScroll: true,
             onSuccess: () => {
-                show.value = false
-                form.reset()
+                closeModal()
             }
         })
     } else {
-        form.post(route('post.create'), {
+        form.post(route('post.create', form.attachments), {
             preserveScroll: true,
             onSuccess: () => {
-                show.value = false
-                form.reset()
-            }
+                closeModal()
+            },
         })
     }
 }
@@ -172,7 +172,7 @@ function submit() {
                                     <div class="mt-2">
                                         <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"/>
                                         <div class="grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-3 mt-3">
-                                            <template v-for="(myFile, i) of attachmentFiles">
+                                            <template v-for="myFile of attachmentFiles">
                                                 <div class="relative group object-cover">
                                                     <button
                                                         @click="removeFile(myFile)"
@@ -180,9 +180,9 @@ function submit() {
                                                         <XMarkIcon class="h-5 w-5"/>
                                                     </button>
 
-                                                    <img v-if="isImage(myFile.file)" :src="myFile.url" class=" rounded-md object-cover aspect-square">
+                                                    <img v-if="isImage(myFile.file)" :src="myFile.url" class="rounded-md object-cover aspect-square" alt="image">
 
-                                                    <div v-else class="bg-gray-100 h-full flex flex-col items-center justify-center text-gray-400 overflow-hidden">
+                                                    <div v-else class="bg-gray-100 h-full flex flex-col items-center rounded-md justify-center text-gray-400 overflow-hidden">
                                                         <PaperClipIcon class="w-12 h-12"/>
 
                                                         {{ myFile.file.name }}
