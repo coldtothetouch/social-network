@@ -110,11 +110,11 @@ function deletePost() {
 
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-3">
-            <template v-for="(attachment, i) of post.attachments.slice(0, 3)">
+        <div class="grid md:grid-cols-2 lg:grid-cols-2 sm:grid-cols-1 gap-3">
+            <template v-for="(attachment, i) of post.attachments.slice(0, 4)">
                 <div class="relative group relative">
 
-                    <div v-if="i === 3" class="absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center text-2xl text-white bg-black/40">
+                    <div v-if="i === 3 && post.attachments.length > 4" class="absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center text-2xl text-white bg-black/40 rounded-md">
                         +{{post.attachments.length - 3}} more...
                     </div>
 

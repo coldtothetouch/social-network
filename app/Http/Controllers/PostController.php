@@ -53,7 +53,51 @@ class PostController extends Controller
 
     public function update(Post $post, UpdatePostRequest $request): RedirectResponse
     {
-        $post->update($request->validated());
+        $allFilePaths = [];
+        $data = $request->validated();
+
+        DB::beginTransaction();
+        try {
+
+            $post->update($data);
+
+            $deletedFileIds = $data['deleted_file_ids'] ?? [];
+
+            if ($deletedFileIds) {
+
+                $attachments = PostAttachment::query()
+                    ->where('post_id', $post->id)
+                    ->whereIn('id', $deletedFileIds)
+                    ->get();
+
+                foreach ($attachments as $attachment) {
+                    $attachment->delete();
+                }
+            }
+
+            /** @var UploadedFile[] $files */
+            $files = $data['attachments'];
+
+            foreach ($files as $file) {
+                $path = $file->storeAs("attachments/$post->id", Str::random(32) . '.jpg', 'public');
+                $allFilePaths[] = $path;
+
+                PostAttachment::query()->create([
+                    'post_id' => $post->id,
+                    'mime' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $path,
+                    'created_by' => $request->user(),
+                ]);
+            }
+
+            Db::commit();
+        } catch (Throwable $exception) {
+            Storage::disk('public')->delete($allFilePaths);
+            Db::rollBack();
+        }
+
         return back();
     }
 
