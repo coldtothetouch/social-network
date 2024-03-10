@@ -93,12 +93,20 @@ class PostController extends Controller
             }
 
             Db::commit();
-        } catch (Throwable $exception) {
+        } catch (Throwable) {
             Storage::disk('public')->delete($allFilePaths);
             Db::rollBack();
         }
 
         return back();
+    }
+
+    public function download(PostAttachment $attachment)
+    {
+        // Both approaches are working
+
+        return response()->download(Storage::disk('public')->path($attachment->path), $attachment->name);
+        //Storage::download("app/public/$attachment->path", $attachment->name);
     }
 
     public function destroy(Post $post)

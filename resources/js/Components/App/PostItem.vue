@@ -118,10 +118,10 @@ function deletePost() {
                         +{{post.attachments.length - 3}} more...
                     </div>
 
-                    <button
+                    <a :href="route('post.download-attachment', attachment)"
                         class="absolute opacity-0 group-hover:opacity-100 transition-all right-5 top-5 h-10 w-10 bg-gray-400 rounded-lg flex justify-center items-center hover:bg-gray-500">
                         <ArrowUpTrayIcon class="text-white w-6 h-6"/>
-                    </button>
+                    </a>
 
                     <img v-if="isImage(attachment)" :src="attachment.url" class="object-cover aspect-square rounded-md" :alt="attachment.name">
 

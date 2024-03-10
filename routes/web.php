@@ -24,11 +24,11 @@ Route::group([
     'middleware' => 'auth',
     'as' => 'post.',
 ], function () {
-
     //Route::get('/post/{post}', 'index')->name('index');
     Route::post('/post/create', 'store')->name('create');
     Route::put('/post/{post}', 'update')->name('update');
     Route::delete('/post/{post}', 'destroy')->name('destroy');
+    Route::get('/post/{attachment}/download', 'download')->name('download-attachment');
 });
 
 require __DIR__.'/auth.php';
