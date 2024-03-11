@@ -13,7 +13,7 @@ const props = defineProps({
     post: Object,
 })
 
-const emit = defineEmits(['editClick'])
+const emit = defineEmits(['editClick', 'attachmentClick'])
 
 function openEditModal() {
     emit('editClick', props.post)
@@ -25,6 +25,10 @@ function deletePost() {
             preserveScroll: true
         })
     }
+}
+
+function openAttachment(index) {
+    emit('attachmentClick', props.post, index);
 }
 
 </script>
@@ -56,7 +60,7 @@ function deletePost() {
                         <div class="px-1 py-1">
                             <MenuItem v-slot="{ active }">
                                 <button @click="openEditModal"
-                                    :class="[
+                                        :class="[
                   active ? 'bg-gray-100' : '',
                   'group flex w-full items-center rounded-md px-2 py-2 text-sm',
                 ]"
@@ -103,7 +107,9 @@ function deletePost() {
 
                 <div class="flex justify-end">
                     <DisclosureButton>
-                        <p class="cursor-pointer text-blue-600 hover:underline my-2">{{ open ? 'Hide' : 'Read More' }}</p>
+                        <p class="cursor-pointer text-blue-600 hover:underline my-2">{{
+                                open ? 'Hide' : 'Read More'
+                            }}</p>
                     </DisclosureButton>
                 </div>
             </Disclosure>
@@ -112,22 +118,23 @@ function deletePost() {
 
         <div class="grid md:grid-cols-2 lg:grid-cols-2 sm:grid-cols-1 gap-3">
             <template v-for="(attachment, i) of post.attachments.slice(0, 4)">
-                <div class="relative group relative">
+                <div @click="openAttachment(i)" class="relative group relative cursor-pointer">
 
-                    <div v-if="i === 3 && post.attachments.length > 4" class="absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center text-2xl text-white bg-black/40 rounded-md">
-                        +{{post.attachments.length - 3}} more...
+                    <div v-if="i === 3 && post.attachments.length > 4"
+                         class="absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center text-2xl text-white bg-black/40 rounded-md">
+                        +{{ post.attachments.length - 3 }} more...
                     </div>
 
                     <a :href="route('post.download-attachment', attachment)"
-                        class="absolute opacity-0 group-hover:opacity-100 transition-all right-5 top-5 h-10 w-10 bg-gray-400 rounded-lg flex justify-center items-center hover:bg-gray-500">
+                       class="absolute opacity-0 group-hover:opacity-100 transition-all right-5 top-5 h-10 w-10 bg-gray-400 rounded-lg flex justify-center items-center hover:bg-gray-500">
                         <ArrowUpTrayIcon class="text-white w-6 h-6"/>
                     </a>
 
-                    <img v-if="isImage(attachment)" :src="attachment.url" class="object-cover aspect-square rounded-md" :alt="attachment.name">
+                    <img v-if="isImage(attachment)" :src="attachment.url" class="object-cover aspect-square rounded-md"
+                         :alt="attachment.name">
 
-                    <div v-else class="bg-gray-100 h-full flex flex-col items-center justify-center  text-gray-400">
+                    <div v-else class="bg-gray-100 aspect-square flex flex-col items-center justify-center rounded-md text-gray-400">
                         <DocumentIcon class="w-40 h-40"/>
-
                         {{ attachment.name }}
                     </div>
                 </div>
