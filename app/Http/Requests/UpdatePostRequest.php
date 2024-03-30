@@ -20,7 +20,7 @@ class UpdatePostRequest extends StorePostRequest
     {
         return array_merge(parent::rules(), [
             'deleted_file_ids' => 'array',
-            'deleted_file_ids.*' => 'numeric'
+            'deleted_file_ids.*' => 'integer'
         ]);
     }
 }

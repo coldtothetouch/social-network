@@ -63,6 +63,7 @@ function resetModal()
     showAllowedExtensionsText.value = false
     attachmentFiles.value = []
     attachmentErrors.value = []
+    formError.value = null
 
     if (props.post.attachments) {
         props.post.attachments.forEach(file => file.deleted = false)
@@ -76,16 +77,23 @@ const form = useForm({
     _method: 'POST'
 })
 
-const showAllowedExtensionsText = ref(false)
-async function onAttachmentChoose(event) {
-    for (const file of event.target.files) {
+const showAllowedExtensionsText = computed(() => {
+    for (let myFile of attachmentFiles.value) {
+        const file = myFile.file
 
         const parts = file.name.split('.')
         const ext = parts.pop().toLowerCase()
 
         if (!allowedAttachmentExtensions.includes(ext)) {
-            showAllowedExtensionsText.value = true
+            return true
         }
+    }
+    return false
+})
+async function onAttachmentChoose(event) {
+    for (const file of event.target.files) {
+
+
 
         const myFile = {
             file,
@@ -146,6 +154,7 @@ const editorConfig = {
 }
 
 const attachmentErrors = ref([])
+const formError = ref(null)
 
 function submit() {
     form.attachments = attachmentFiles.value.map(file => file.file)
@@ -174,6 +183,8 @@ function submit() {
 }
 
 function processErrors(errors) {
+    formError.value = errors.attachments
+
     for (const key in errors) {
         if (key.includes('.')) {
             const [, index] = key.split('.')
@@ -242,6 +253,11 @@ function restoreFile(file) {
                                              class="border-l-8 border-amber-300 text-gray-700 bg-amber-100 p-3 mt-3">
                                             Allowed file extensions:
                                             <p class="text-sm">{{ allowedAttachmentExtensions.join(', ') }}</p>
+                                        </div>
+
+                                        <div v-if="formError"
+                                             class="border-l-8 border-red-300 text-red-700 bg-red-100 p-3 mt-3">
+                                            {{ formError }}
                                         </div>
 
                                         <div class="grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-3 mt-3"

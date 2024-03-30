@@ -36,7 +36,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user() ? new UserResource($request->user()) : null,
             ],
-            'allowedAttachmentExtensions' => StorePostRequest::$extensions
+            'allowedAttachmentExtensions' => StorePostRequest::$allowedExtensions
         ];
     }
 }
