@@ -12,7 +12,11 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
-        $posts = Post::query()->latest('updated_at')->paginate(20);
+        $posts = Post::query()
+            ->withCount('reactions')
+            ->with('reactions', fn ($reaction) => $reaction->where('user_id', auth()->id()))
+            ->latest('updated_at')
+            ->paginate(20);
 
         return Inertia::render('Home', [
             'canLogin' => Route::has('login'),

@@ -2,15 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Enums\PostReactionEnum;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\PostAttachment;
+use App\Models\PostReaction;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
 class PostController extends Controller
@@ -43,7 +51,7 @@ class PostController extends Controller
             }
 
             Db::commit();
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             Storage::disk('public')->delete($allFilePaths);
             Db::rollBack();
         }
@@ -101,7 +109,41 @@ class PostController extends Controller
         return back();
     }
 
-    public function download(PostAttachment $attachment)
+    public function postReaction(Request $request, Post $post)
+    {
+        $data = $request->validate([
+            'reaction' => Rule::enum(PostReactionEnum::class)
+        ]);
+
+        $reaction = PostReaction::query()
+            ->where('user_id', auth()->id())
+            ->where('post_id', $post->id)
+            ->first();
+
+
+        if ($reaction) {
+            $hasReaction = false;
+            $reaction->delete();
+        } else {
+            $hasReaction = true;
+            PostReaction::query()->create([
+                'post_id' => $post->id,
+                'user_id' => auth()->id(),
+                'type' => $data['reaction']
+            ]);
+        }
+
+        $reactionCount = PostReaction::query()
+            ->where('post_id', $post->id)
+            ->count();
+
+        return response()->json([
+            'reactions_count' => $reactionCount,
+            'current_user_has_reaction' => $hasReaction,
+        ]);
+    }
+
+    public function download(PostAttachment $attachment): BinaryFileResponse
     {
         // Both approaches are working
 
@@ -109,7 +151,7 @@ class PostController extends Controller
         //Storage::download("app/public/$attachment->path", $attachment->name);
     }
 
-    public function destroy(Post $post)
+    public function destroy(Post $post): \Illuminate\Foundation\Application|Response|Application|RedirectResponse|ResponseFactory
     {
         if ($post->user_id !== auth()->id()) {
             return response("You don't have permission to delete this post", 403);

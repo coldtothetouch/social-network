@@ -23,12 +23,14 @@ Route::group([
     'controller' => PostController::class,
     'middleware' => 'auth',
     'as' => 'post.',
+    'prefix' => 'post'
 ], function () {
     //Route::get('/post/{post}', 'index')->name('index');
-    Route::post('/post/create', 'store')->name('create');
-    Route::put('/post/{post}', 'update')->name('update');
-    Route::delete('/post/{post}', 'destroy')->name('destroy');
-    Route::get('/post/{attachment}/download', 'download')->name('download-attachment');
+    Route::post('create', 'store')->name('create');
+    Route::put('{post}', 'update')->name('update');
+    Route::delete('{post}', 'destroy')->name('destroy');
+    Route::get('attachment/{attachment}/download', 'download')->name('download-attachment');
+    Route::post('{post}/react', 'postReaction')->name('reaction');
 });
 
 require __DIR__.'/auth.php';

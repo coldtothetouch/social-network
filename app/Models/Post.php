@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Enums\PostReactionEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,5 +32,15 @@ class Post extends Model
     public function attachments(): HasMany
     {
         return $this->hasMany(PostAttachment::class)->latest();
+    }
+
+    public function reactions(): HasMany
+    {
+        return $this->hasMany(PostReaction::class);
+    }
+
+    public function likes(): HasMany
+    {
+        return $this->reactions()->where('type', PostReactionEnum::LIKE);
     }
 }
