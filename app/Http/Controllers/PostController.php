@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Enums\PostReactionEnum;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\CommentResource;
+use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostAttachment;
 use App\Models\PostReaction;
@@ -149,6 +151,21 @@ class PostController extends Controller
 
         return response()->download(Storage::disk('public')->path($attachment->path), $attachment->name);
         //Storage::download("app/public/$attachment->path", $attachment->name);
+    }
+
+    public function createComment(Request $request, Post $post)
+    {
+        $data = $request->validate([
+            'comment' => 'required'
+        ]);
+
+        $comment = Comment::query()->create([
+            'post_id' => $post->id,
+            'user_id' => auth()->id(),
+            'body' => nl2br($data['comment']),
+        ]);
+
+        return new CommentResource($comment, 201);
     }
 
     public function destroy(Post $post): \Illuminate\Foundation\Application|Response|Application|RedirectResponse|ResponseFactory

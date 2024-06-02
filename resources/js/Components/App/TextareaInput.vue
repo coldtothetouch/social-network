@@ -1,5 +1,5 @@
 <script setup>
-import {onMounted, ref} from 'vue';
+import {nextTick, onMounted, ref, watch} from 'vue';
 
 const model = defineModel({
     type: String,
@@ -17,7 +17,7 @@ const props = defineProps({
 function adjustHeight() {
     if (props.autoresize) {
         input.value.style.height = 'auto'
-        input.value.style.height = input.value.scrollHeight + 'px'
+        input.value.style.height = input.value.scrollHeight + 2 + 'px'
     }
 }
 
@@ -29,9 +29,14 @@ const emit = defineEmits(['update:modelValue'])
 
 const input = ref(null);
 
+watch(() => props.modelValue, () => {
+    nextTick(() => {
+        adjustHeight()
+    })
+})
+
 function onInputChange($event) {
     emit('update:modelValue', $event.target.value)
-    adjustHeight()
 }
 
 onMounted(() => {

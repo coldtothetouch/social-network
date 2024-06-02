@@ -39,6 +39,11 @@ class Post extends Model
         return $this->hasMany(PostReaction::class);
     }
 
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function likes(): HasMany
     {
         return $this->reactions()->where('type', PostReactionEnum::LIKE);

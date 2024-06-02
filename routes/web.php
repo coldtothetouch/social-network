@@ -29,8 +29,9 @@ Route::group([
     Route::post('create', 'store')->name('create');
     Route::put('{post}', 'update')->name('update');
     Route::delete('{post}', 'destroy')->name('destroy');
-    Route::get('attachment/{attachment}/download', 'download')->name('download-attachment');
-    Route::post('{post}/react', 'postReaction')->name('reaction');
+    Route::get('attachment/{attachment}/download', 'download')->name('attachment.download');
+    Route::post('{post}/react', 'postReaction')->name('reaction.store');
+    Route::post('{post}/comment', 'createComment')->name('comment.store');
 });
 
 require __DIR__.'/auth.php';
