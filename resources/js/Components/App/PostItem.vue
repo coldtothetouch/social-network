@@ -1,12 +1,8 @@
 <script setup>
 import {
-    Menu, MenuButton, MenuItems, MenuItem,
     Disclosure, DisclosureButton, DisclosurePanel
 } from '@headlessui/vue'
 import {
-    PencilIcon,
-    TrashIcon,
-    EllipsisVerticalIcon,
     ArrowUpTrayIcon,
 } from '@heroicons/vue/24/outline'
 import {HandThumbUpIcon, ChatBubbleLeftRightIcon} from '@heroicons/vue/24/solid'
@@ -19,6 +15,7 @@ import TextareaInput from "@/Components/App/TextareaInput.vue";
 import IndigoButton from "@/Components/App/IndigoButton.vue";
 import {ref} from "vue";
 import ReadMoreOrHide from "@/Components/App/ReadMoreOrHide.vue";
+import EditDeleteDropdown from "@/Components/App/EditDeleteDropdown.vue";
 
 const user = usePage().props.auth.user
 
@@ -27,6 +24,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['editClick', 'attachmentClick'])
+const editingComment = ref(null)
 
 function openEditModal() {
     emit('editClick', props.post)
@@ -64,67 +62,49 @@ function storeComment() {
     })
 }
 
+function updateComment() {
+    axios.put(route('post.comment.update', editingComment.value.id), {body: editingComment.value.body})
+        .then(({data}) => {
+            props.post.comments = props.post.comments.map((c) => {
+                if (c.id === data.id) {
+                    return data;
+                }
+                return c;
+            })
+            editingComment.value = null;
+        })
+}
+
+function deleteComment(comment) {
+    if (!window.confirm('Are you sure to delete this comment?')) {
+        return false
+    }
+
+    axios.delete(route('post.comment.delete', comment))
+        .then(() => {
+            props.post.comments = props.post.comments.filter(c => c.id !== comment.id)
+            props.post.comments_count -= 1
+        })
+}
+
+function startCommentEdit(comment) {
+    editingComment.value = {
+        id: comment.id,
+        body: comment.body.replace(/<br\s*\/?>/gi, '\n')
+    };
+}
+
+function stopCommentEdit() {
+    editingComment.value = null;
+}
+
 </script>
 
 <template>
     <div class="border p-5 rounded-lg bg-white shadow">
         <div class="flex justify-between  items-center mb-3">
             <PostUserHeader :post="post"/>
-            <Menu as="div" class="relative inline-block text-left z-10">
-                <div class="rounded-full">
-                    <MenuButton
-                        class="hover:bg-gray-100 p-2 rounded-full"
-                    >
-                        <EllipsisVerticalIcon class="w-4 h-4 text-gray-400"/>
-                    </MenuButton>
-                </div>
-
-                <transition
-                    enter-active-class="transition duration-100 ease-out"
-                    enter-from-class="transform scale-95 opacity-0"
-                    enter-to-class="transform scale-100 opacity-100"
-                    leave-active-class="transition duration-75 ease-in"
-                    leave-from-class="transform scale-100 opacity-100"
-                    leave-to-class="transform scale-95 opacity-0"
-                >
-                    <MenuItems
-                        class="absolute right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
-                    >
-                        <div class="px-1 py-1">
-                            <MenuItem v-slot="{ active }">
-                                <button @click="openEditModal"
-                                        :class="[
-                  active ? 'bg-gray-100' : '',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                ]"
-                                >
-                                    <PencilIcon
-                                        class="mr-2 h-5 w-5 text-gray-400"
-                                        aria-hidden="true"
-                                    />
-                                    Edit
-                                </button>
-                            </MenuItem>
-
-                            <MenuItem v-slot="{ active }">
-                                <button
-                                    @click="deletePost"
-                                    :class="[
-                                active ? 'bg-gray-100' : '',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
-                ]"
-                                >
-                                    <TrashIcon
-                                        class="mr-2 h-5 w-5 text-gray-400"
-                                        aria-hidden="true"
-                                    />
-                                    Delete
-                                </button>
-                            </MenuItem>
-                        </div>
-                    </MenuItems>
-                </transition>
-            </Menu>
+            <EditDeleteDropdown :user="post.user" @edit="openEditModal" @delete="deletePost"></EditDeleteDropdown>
         </div>
         <div class="overflow-hidden" v-if="post.body">
             <ReadMoreOrHide :content="post.body"/>
@@ -156,7 +136,6 @@ function storeComment() {
             </template>
         </div>
 
-
         <Disclosure v-slot="{ open }">
             <div class="flex gap-5 justify-between mt-5 text-gray-600">
                 <button @click="sendReaction"
@@ -180,7 +159,8 @@ function storeComment() {
                 <div class="flex gap-3 items-center mb-3">
                     <a href="javascript:void(0)" class="self-start">
                         <img :src="user.avatar_url"
-                             class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square" alt="avatar">
+                             class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square"
+                             alt="avatar">
                     </a>
                     <div class="flex flex-1">
                         <TextareaInput v-model="comment" placeholder="Enter your comment here..." rows="1"
@@ -194,7 +174,8 @@ function storeComment() {
                         <div class="flex gap-3 items-center mb-3">
                             <a href="javascript:void(0)" class="self-start">
                                 <img :src="comment.user.avatar_url"
-                                     class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square" alt="avatar">
+                                     class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square"
+                                     alt="avatar">
                             </a>
 
                             <div class="w-full flex flex-col">
@@ -206,8 +187,23 @@ function storeComment() {
                                     <small class="text-xs text-gray-400">{{ comment.created_at }}</small>
                                 </div>
 
-                                <ReadMoreOrHide :content="comment.body"/>
+                                <div v-if="editingComment?.id === comment.id">
+
+                                    <TextareaInput v-model="editingComment.body"
+                                                   placeholder="Enter your comment here..." rows="1"
+                                                   class="w-full resize-none max-h-[160px] overflow-auto"/>
+                                    <div class="flex gap-3 justify-end">
+                                        <IndigoButton @click="updateComment()" class="w-[100px]">Update
+                                        </IndigoButton>
+                                        <IndigoButton @click="stopCommentEdit"
+                                                      class="w-[100px] bg-red-600 hover:bg-red-500">Cancel
+                                        </IndigoButton>
+                                    </div>
+                                </div>
+                                <ReadMoreOrHide v-else :content="comment.body"/>
                             </div>
+                            <EditDeleteDropdown :user="comment.user" @edit="startCommentEdit(comment)"
+                                                @delete="deleteComment(comment)"></EditDeleteDropdown>
                         </div>
                     </div>
                 </div>

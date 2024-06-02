@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Enums\PostReactionEnum;
 use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
@@ -16,6 +17,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -166,6 +168,26 @@ class PostController extends Controller
         ]);
 
         return new CommentResource($comment, 201);
+    }
+
+    public function updateComment(UpdateCommentRequest $request, Comment $comment)
+    {
+        $data = $request->validated();
+
+        $comment->update($data);
+
+        return new CommentResource($comment);
+    }
+
+    public function deleteComment(Comment $comment)
+    {
+        if ($comment->user_id !== Auth::id()) {
+            return response("You don't have permission to delete this comment", 403);
+        }
+
+        $comment->delete();
+
+        return response('', 204);
     }
 
     public function destroy(Post $post): \Illuminate\Foundation\Application|Response|Application|RedirectResponse|ResponseFactory
