@@ -13,6 +13,7 @@ use App\Models\PostAttachment;
 use App\Models\Reaction;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -113,7 +114,7 @@ class PostController extends Controller
         return back();
     }
 
-    public function postReaction(Request $request, Post $post)
+    public function postReaction(Request $request, Post $post): JsonResponse
     {
         $data = $request->validate([
             'reaction' => Rule::enum(ReactionEnum::class)
@@ -158,22 +159,25 @@ class PostController extends Controller
         //Storage::download("app/public/$attachment->path", $attachment->name);
     }
 
-    public function createComment(Request $request, Post $post)
+    public function createComment(Request $request, Post $post): CommentResource
     {
+
         $data = $request->validate([
-            'comment' => 'required'
+            'comment' => 'required',
+            'parent_id' => 'nullable|exists:comments,id',
         ]);
 
         $comment = Comment::query()->create([
             'post_id' => $post->id,
             'user_id' => auth()->id(),
             'body' => nl2br($data['comment']),
+            'parent_id' => $data['parent_id'] ?? null,
         ]);
 
         return new CommentResource($comment, 201);
     }
 
-    public function updateComment(UpdateCommentRequest $request, Comment $comment)
+    public function updateComment(UpdateCommentRequest $request, Comment $comment): CommentResource
     {
         $data = $request->validated();
 
@@ -182,7 +186,7 @@ class PostController extends Controller
         return new CommentResource($comment);
     }
 
-    public function deleteComment(Comment $comment)
+    public function deleteComment(Comment $comment): Response|Application|ResponseFactory
     {
         if ($comment->user_id !== Auth::id()) {
             return response("You don't have permission to delete this comment", 403);
@@ -193,7 +197,7 @@ class PostController extends Controller
         return response('', 204);
     }
 
-    public function commentReaction(Request $request, Comment $comment)
+    public function commentReaction(Request $request, Comment $comment): JsonResponse
     {
         $data = $request->validate([
             'reaction' => Rule::enum(ReactionEnum::class)
@@ -230,7 +234,7 @@ class PostController extends Controller
         ]);
     }
 
-    public function destroy(Post $post): \Illuminate\Foundation\Application|Response|Application|RedirectResponse|ResponseFactory
+    public function destroy(Post $post): Response|Application|RedirectResponse|ResponseFactory
     {
         if ($post->user_id !== auth()->id()) {
             return response("You don't have permission to delete this post", 403);
