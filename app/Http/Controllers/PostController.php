@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Enums\PostReactionEnum;
+use App\Http\Enums\ReactionEnum;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Requests\UpdatePostRequest;
@@ -10,7 +10,7 @@ use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostAttachment;
-use App\Models\PostReaction;
+use App\Models\Reaction;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
@@ -116,29 +116,32 @@ class PostController extends Controller
     public function postReaction(Request $request, Post $post)
     {
         $data = $request->validate([
-            'reaction' => Rule::enum(PostReactionEnum::class)
+            'reaction' => Rule::enum(ReactionEnum::class)
         ]);
 
-        $reaction = PostReaction::query()
+        $reaction = Reaction::query()
             ->where('user_id', auth()->id())
-            ->where('post_id', $post->id)
+            ->where('reactionable_id', $post->id)
+            ->where('reactionable_type', Post::class)
             ->first();
-
 
         if ($reaction) {
             $hasReaction = false;
             $reaction->delete();
         } else {
             $hasReaction = true;
-            PostReaction::query()->create([
-                'post_id' => $post->id,
+
+            Reaction::query()->create([
+                'reactionable_id' => $post->id,
+                'reactionable_type' => Post::class,
                 'user_id' => auth()->id(),
                 'type' => $data['reaction']
             ]);
         }
 
-        $reactionCount = PostReaction::query()
-            ->where('post_id', $post->id)
+        $reactionCount = Reaction::query()
+            ->where('reactionable_id', $post->id)
+            ->where('reactionable_type', Post::class)
             ->count();
 
         return response()->json([
@@ -188,6 +191,43 @@ class PostController extends Controller
         $comment->delete();
 
         return response('', 204);
+    }
+
+    public function commentReaction(Request $request, Comment $comment)
+    {
+        $data = $request->validate([
+            'reaction' => Rule::enum(ReactionEnum::class)
+        ]);
+
+        $reaction = Reaction::query()
+            ->where('user_id', auth()->id())
+            ->where('reactionable_id', $comment->id)
+            ->where('reactionable_type', Comment::class)
+            ->first();
+
+        if ($reaction) {
+            $hasReaction = false;
+            $reaction->delete();
+        } else {
+            $hasReaction = true;
+
+            Reaction::query()->create([
+                'reactionable_id' => $comment->id,
+                'reactionable_type' => Comment::class,
+                'user_id' => auth()->id(),
+                'type' => $data['reaction']
+            ]);
+        }
+
+        $reactionCount = Reaction::query()
+            ->where('reactionable_id', $comment->id)
+            ->where('reactionable_type', Comment::class)
+            ->count();
+
+        return response()->json([
+            'reactions_count' => $reactionCount,
+            'current_user_has_reaction' => $hasReaction,
+        ]);
     }
 
     public function destroy(Post $post): \Illuminate\Foundation\Application|Response|Application|RedirectResponse|ResponseFactory

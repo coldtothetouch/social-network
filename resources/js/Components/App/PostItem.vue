@@ -5,7 +5,7 @@ import {
 import {
     ArrowUpTrayIcon,
 } from '@heroicons/vue/24/outline'
-import {HandThumbUpIcon, ChatBubbleLeftRightIcon} from '@heroicons/vue/24/solid'
+import {HandThumbUpIcon, ChatBubbleLeftRightIcon, ChatBubbleLeftEllipsisIcon} from '@heroicons/vue/24/outline'
 import {DocumentIcon} from '@heroicons/vue/24/outline'
 import {isImage} from '@/helpers.js'
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
@@ -47,6 +47,14 @@ function sendReaction() {
         .then(({data}) => {
             props.post.current_user_has_reaction = data.current_user_has_reaction
             props.post.reactions_count = data.reactions_count
+        })
+}
+
+function sendCommentReaction(comment) {
+    axios.post(route('post.comment.reaction.store', comment), {reaction: 'like'})
+        .then(({data}) => {
+            comment.current_user_has_reaction = data.current_user_has_reaction
+            comment.reactions_count = data.reactions_count
         })
 }
 
@@ -201,6 +209,20 @@ function stopCommentEdit() {
                                     </div>
                                 </div>
                                 <ReadMoreOrHide v-else :content="comment.body"/>
+                                <div class="mt-1 flex gap-2">
+
+                                    <button  @click="sendCommentReaction(comment)"
+                                             class="flex items-center text-xs text-indigo-500 hover:bg-indigo-100 rounded-lg p-1"
+                                             :class="comment.current_user_has_reaction ? 'bg-indigo-100': ''">
+                                        {{ comment.reactions_count }}
+                                        <HandThumbUpIcon class="w-4 h-4 mx-1"/>
+                                        {{ comment.current_user_has_reaction ? 'Unlike' : 'Like'}}
+                                    </button>
+                                    <button class="flex items-center text-xs text-underline text-indigo-500 hover:bg-indigo-100 rounded-lg p-1">
+                                        <ChatBubbleLeftEllipsisIcon class="w-4 h-4 mr-2"/>
+                                        Reply
+                                    </button>
+                                </div>
                             </div>
                             <EditDeleteDropdown :user="comment.user" @edit="startCommentEdit(comment)"
                                                 @delete="deleteComment(comment)"></EditDeleteDropdown>

@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('name', 255);
             $table->string('path', 255);
 
-            $table->foreignIdFor(Post::class);
-            $table->foreignIdFor(User::class, 'created_by')->nullable();
+            $table->foreignIdFor(Post::class)->constrained();
+            $table->foreignIdFor(User::class, 'created_by')->nullable()->constrained('users');
 
             $table->timestamp('created_at')->nullable();
         });

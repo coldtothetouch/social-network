@@ -24,8 +24,8 @@ return new class extends Migration
 
             $table->boolean('private', 1024)->default(false);
 
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(User::class, 'deleted_by')->nullable();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(User::class, 'deleted_by')->nullable()->constrained('users');
 
             $table->softDeletes();
             $table->timestamps();

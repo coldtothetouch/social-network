@@ -13,10 +13,13 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $posts = Post::query()
-            ->withCount('reactions')
-            ->withCount('comments')
-            ->with('comments')
-            ->with('reactions', fn ($reaction) => $reaction->where('user_id', auth()->id()))
+            ->withCount(['reactions', 'comments'])
+            ->with([
+                'user', 'group', 'attachments',
+                'reactions' => fn($reaction) => $reaction->where('user_id', auth()->id()),
+                'comments' => fn($query) => $query->withCount('likes')
+                    ->with(['user', 'reactions' => fn ($query) => $query->where('user_id', auth()->id())])
+            ])
             ->latest('updated_at')
             ->paginate(20);
 

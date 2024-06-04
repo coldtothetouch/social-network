@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
-use App\Http\Enums\PostReactionEnum;
+use App\Http\Enums\ReactionEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Post extends Model
@@ -16,7 +17,7 @@ class Post extends Model
 
     protected $fillable = [
         'body',
-        'user_id'
+        'user_id',
     ];
 
     public function user(): BelongsTo
@@ -34,9 +35,9 @@ class Post extends Model
         return $this->hasMany(PostAttachment::class)->latest();
     }
 
-    public function reactions(): HasMany
+    public function reactions(): MorphMany
     {
-        return $this->hasMany(PostReaction::class);
+        return $this->morphMany(Reaction::class, 'reactionable');
     }
 
     public function comments(): HasMany
@@ -44,8 +45,8 @@ class Post extends Model
         return $this->hasMany(Comment::class);
     }
 
-    public function likes(): HasMany
+    public function likes(): MorphMany
     {
-        return $this->reactions()->where('type', PostReactionEnum::LIKE);
+        return $this->reactions()->where('type', ReactionEnum::LIKE);
     }
 }

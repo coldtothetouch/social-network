@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Enums\ReactionEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,5 +21,15 @@ class Comment extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function reactions()
+    {
+        return $this->morphMany(Reaction::class, 'reactionable');
+    }
+
+    public function likes()
+    {
+        return $this->reactions()->where('type', ReactionEnum::LIKE);
     }
 }

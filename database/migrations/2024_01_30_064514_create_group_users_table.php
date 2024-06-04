@@ -24,9 +24,9 @@ return new class extends Migration
             $table->string('role', 25);
             $table->string('status', 25); // pending | approved
 
-            $table->foreignIdFor(User::class);
-            $table->foreignIdFor(Group::class);
-            $table->foreignIdFor(User::class, 'created_by')->nullable();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(Group::class)->constrained();
+            $table->foreignIdFor(User::class, 'created_by')->nullable()->constrained('users');
 
             $table->timestamp('created_at')->nullable();
         });

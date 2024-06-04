@@ -18,8 +18,8 @@ return new class extends Migration
 
             $table->string('type'); // like | dislike | sad & etc...
 
-            $table->foreignIdFor(Post::class);
-            $table->foreignIdFor(User::class);
+            $table->foreignIdFor(Post::class)->constrained();
+            $table->foreignIdFor(User::class)->constrained();
 
             $table->timestamp('created_at')->nullable();
         });
