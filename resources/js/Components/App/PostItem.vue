@@ -1,13 +1,6 @@
 <script setup>
-import {
-    Disclosure, DisclosureButton, DisclosurePanel
-} from '@headlessui/vue'
-import {
-    ArrowUpTrayIcon,
-} from '@heroicons/vue/24/outline'
-import {HandThumbUpIcon, ChatBubbleLeftRightIcon, ChatBubbleLeftEllipsisIcon} from '@heroicons/vue/24/outline'
-import {DocumentIcon} from '@heroicons/vue/24/outline'
-import {isImage} from '@/helpers.js'
+import {Disclosure, DisclosureButton, DisclosurePanel} from '@headlessui/vue'
+import {ChatBubbleLeftEllipsisIcon, ChatBubbleLeftRightIcon, HandThumbUpIcon,} from '@heroicons/vue/24/outline'
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import axios from "axios";
@@ -16,6 +9,7 @@ import IndigoButton from "@/Components/App/IndigoButton.vue";
 import {ref} from "vue";
 import ReadMoreOrHide from "@/Components/App/ReadMoreOrHide.vue";
 import EditDeleteDropdown from "@/Components/App/EditDeleteDropdown.vue";
+import PostAttachments from "@/Components/App/PostAttachments.vue";
 
 const user = usePage().props.auth.user
 
@@ -119,29 +113,7 @@ function stopCommentEdit() {
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-2 sm:grid-cols-1 gap-3">
-            <template v-for="(attachment, i) of post.attachments.slice(0, 4)">
-                <div @click="openAttachment(i)" class="relative group relative cursor-pointer">
-
-                    <div v-if="i === 3 && post.attachments.length > 4"
-                         class="absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center text-2xl text-white bg-black/40 rounded-md">
-                        +{{ post.attachments.length - 3 }} more...
-                    </div>
-
-                    <a @click.stop :href="route('post.attachment.download', attachment)"
-                       class="absolute opacity-0 group-hover:opacity-100 transition-all right-5 top-5 h-10 w-10 bg-gray-400 rounded-lg flex justify-center items-center hover:bg-gray-500">
-                        <ArrowUpTrayIcon class="text-white w-6 h-6"/>
-                    </a>
-
-                    <img v-if="isImage(attachment)" :src="attachment.url" class="object-cover aspect-square rounded-md"
-                         :alt="attachment.name">
-
-                    <div v-else
-                         class="bg-gray-100 aspect-square flex flex-col items-center justify-center rounded-md text-gray-400">
-                        <DocumentIcon class="w-40 h-40"/>
-                        {{ attachment.name }}
-                    </div>
-                </div>
-            </template>
+            <PostAttachments :attachments="post.attachments" @attachmentClick="openAttachment"/>
         </div>
 
         <Disclosure v-slot="{ open }">
@@ -223,19 +195,20 @@ function stopCommentEdit() {
                                         Reply
                                     </button>
                                 </div>
+
                             </div>
                             <EditDeleteDropdown :user="comment.user" @edit="startCommentEdit(comment)"
                                                 @delete="deleteComment(comment)"></EditDeleteDropdown>
                         </div>
                     </div>
                 </div>
-
             </DisclosurePanel>
         </Disclosure>
-
+        <div class="flex flex-1 mt-2">
+            <TextareaInput placeholder="Enter your comment here..." rows="1"
+                           class="w-full resize-none rounded-r-none max-h-[160px] overflow-auto"/>
+            <IndigoButton @click="storeComment" class="w-[100px] rounded-l-none">Submit</IndigoButton>
+        </div>
     </div>
 </template>
 
-<style scoped>
-
-</style>
