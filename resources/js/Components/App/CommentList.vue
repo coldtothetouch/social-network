@@ -21,6 +21,8 @@ const props = defineProps({
     },
 })
 
+const emit = defineEmits(['commentCreate', 'commentDelete'])
+
 /**
  *  Comment Creation
  */
@@ -32,13 +34,21 @@ function storeComment() {
         comment: comment.value,
         parent_id: props.parentComment?.id || null
     }).then(({data}) => {
-        if(props.parentComment) {
+        if (props.parentComment) {
             props.parentComment.comments_count++
         }
         props.post.comments_count++
         comment.value = ''
         props.data.comments.unshift(data)
+        emit('commentCreate', data)
     })
+}
+
+function onCommentCreate(comment) {
+    if (props.parentComment) {
+        props.parentComment.comments_count++
+    }
+    emit('commentCreate', comment);
 }
 
 /**
@@ -55,12 +65,22 @@ function deleteComment(comment) {
             const commentIndex = props.data.comments.findIndex(c => c.id === comment.id)
             props.data.comments.splice(commentIndex, 1)
 
-            if(props.parentComment) {
+            if (props.parentComment) {
                 props.parentComment.comments_count--
             }
 
             props.post.comments_count--
+            emit('commentDelete', comment)
         })
+}
+
+
+function onCommentDelete(comment) {
+    if (props.parentComment) {
+        props.parentComment.comments_count--
+    }
+
+    emit('commentDelete', comment)
 }
 
 /**
@@ -122,6 +142,7 @@ function sendCommentReaction(comment) {
     </div>
     <div>
         <div v-for="comment of props.data.comments" :key="comment.id">
+
             <div class="flex gap-3 items-center mb-3">
                 <a href="javascript:void(0)" class="self-start">
                     <img :src="comment.user.avatar_url"
@@ -154,15 +175,16 @@ function sendCommentReaction(comment) {
                     <ReadMoreOrHide v-else :content="comment.body"/>
                     <Disclosure>
                         <div class="mt-1 flex gap-2">
-                            <button  @click="sendCommentReaction(comment)"
-                                     class="flex items-center text-xs text-indigo-500 hover:bg-indigo-100 rounded-lg p-1"
-                                     :class="comment.current_user_has_reaction ? 'bg-indigo-100': ''">
+                            <button @click="sendCommentReaction(comment)"
+                                    class="flex items-center text-xs text-indigo-500 hover:bg-indigo-100 rounded-lg p-1"
+                                    :class="comment.current_user_has_reaction ? 'bg-indigo-100': ''">
                                 {{ comment.reactions_count }}
                                 <HandThumbUpIcon class="w-4 h-4 mx-1"/>
-                                {{ comment.current_user_has_reaction ? 'unlike' : 'like'}}
+                                {{ comment.current_user_has_reaction ? 'unlike' : 'like' }}
                             </button>
                             <DisclosureButton>
-                                <button class="flex items-center text-xs text-underline text-indigo-500 hover:bg-indigo-100 rounded-lg p-1">
+                                <button
+                                    class="flex items-center text-xs text-underline text-indigo-500 hover:bg-indigo-100 rounded-lg p-1">
                                     {{ comment.comments_count }}
                                     <ChatBubbleLeftEllipsisIcon class="w-4 h-4 mx-1"/>
                                     comments
@@ -170,7 +192,9 @@ function sendCommentReaction(comment) {
                             </DisclosureButton>
                         </div>
                         <DisclosurePanel>
-                            <CommentList :post="props.post"  :data="{comments:  comment.comments}" :parent-comment="comment"></CommentList>
+                            <CommentList @comment-create="onCommentCreate" @comment-delete="onCommentDelete"
+                                         :post="props.post" :data="{comments:  comment.comments}"
+                                         :parent-comment="comment"></CommentList>
                         </DisclosurePanel>
                     </Disclosure>
                 </div>

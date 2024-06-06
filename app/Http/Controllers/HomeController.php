@@ -22,15 +22,7 @@ class HomeController extends Controller
                     $query->where('user_id', auth()->id());
                 },
                 'comments' => function ($query) {
-                    $query->withCount('likes')
-                        ->withCount('comments')
-                        ->whereNull('parent_id')
-                        ->with([
-                            'user', 'comments',
-                            'reactions' => function ($query) {
-                                $query->where('user_id', auth()->id());
-                            }
-                        ]);
+                    $query->withCount('likes');
                 }
             ])
             ->latest('updated_at')

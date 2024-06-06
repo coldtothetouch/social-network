@@ -9,11 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class CommentResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -25,8 +20,8 @@ class CommentResource extends JsonResource
             'reactions_count' => $this->likes_count,
             'current_user_has_reaction' => $this->reactions->count() > 0,
             'parent_id' => $this->parent_id,
-            'comments_count' => $this->comments_count,
-            'comments' => CommentResource::collection($this->comments),
+            'comments_count' => $this->numOfComments,
+            'comments' => $this->childComments,
             'user' => [
                 'id' => $this->user->id,
                 'name' => $this->user->name,
