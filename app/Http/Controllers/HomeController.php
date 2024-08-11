@@ -12,7 +12,7 @@ use Inertia\Response;
 
 class HomeController extends Controller
 {
-    public function index(): Response
+    public function index(Request $request)
     {
         $posts = Post::query()
             ->withCount(['reactions', 'comments'])
@@ -28,9 +28,11 @@ class HomeController extends Controller
             ->latest('updated_at')
             ->paginate(20);
 
+        if($request->wantsJson()) {
+            return PostResource::collection($posts);
+        }
+
         return Inertia::render('Home', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
             'posts' => PostResource::collection($posts),
         ]);
     }

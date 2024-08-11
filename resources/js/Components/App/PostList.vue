@@ -1,7 +1,7 @@
 <script setup>
 import PostItem from "@/Components/App/PostItem.vue";
 import PostModal from "@/Components/App/PostModal.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {usePage} from "@inertiajs/vue3";
 import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal.vue";
 
@@ -35,16 +35,43 @@ function onModalHide() {
     }
 }
 
+const loadMoreIntersect = ref(null)
+
+function loadMore() {
+    if (allPosts.value.next) {
+        axios.get(allPosts.value.next).then(({data}) => {
+            allPosts.value.data = [...allPosts.value.data, ...data.data]
+            allPosts.value.next = data.links.next
+        })
+    }
+}
+
+const page = usePage();
+
+const allPosts = ref({
+    data: page.props.posts.data,
+    next: page.props.posts.links.next,
+})
+
+onMounted(() => {
+    const observer = new IntersectionObserver((entries) =>
+        entries.forEach(entry => entry.isIntersecting && loadMore())
+    )
+
+    observer.observe(loadMoreIntersect.value)
+})
+
 </script>
 
 <template>
     <div class="flex flex-col gap-3 h-full overflow-y-auto">
         <PostItem
-            v-for="post of posts" :key="post.id"
+            v-for="post of allPosts.data" :key="post.id"
             :post="post"
             @editClick="openEditModal"
             @attachmentClick="openPreviewModal"
         />
+        <div ref="loadMoreIntersect"></div>
     </div>
 
     <PostModal

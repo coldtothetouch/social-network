@@ -13,8 +13,8 @@ defineProps({
 <template>
     <div class="flex gap-3 items-center">
         <a href="javascript:void(0)">
-            <img :src="post.user.avatar_url"
-                 class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square">
+            <img :src="post.user.avatar_path || '/img/default_avatar.webp' "
+                 alt="avatar" class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square">
         </a>
         <div class="flex flex-col">
 

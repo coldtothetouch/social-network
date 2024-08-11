@@ -112,7 +112,7 @@ function resetAvatarImage() {
             </div>
             <div class="relative group">
 
-                <img :src="coverImageSrc || user.cover_url || '/img/default_cover.jpg' "
+                <img alt="cover" :src="coverImageSrc || user.cover_path || '/img/default_cover.jpg' "
                      class="w-full object-cover h-[300px]">
                 <div class="absolute top-3 right-3">
                     <button v-if="!coverImageSrc"
@@ -143,7 +143,7 @@ function resetAvatarImage() {
                 <div class="flex bg-white">
                     <div
                         class="flex items-center justify-center relative group/avatar -mt-[64px] ml-[48px] w-[128px] h-[128px] rounded-full">
-                        <img :src="avatarImageSrc  || user.avatar_url || '/img/default_avatar.webp'"
+                        <img alt="avatar" :src="avatarImageSrc  || user.avatar_path || '/img/default_avatar.webp'"
                              class="w-full h-full object-cover rounded-full">
                         <button
                             v-if="!avatarImageSrc"
