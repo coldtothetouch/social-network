@@ -6,56 +6,20 @@ import {ref} from "vue";
 
 const search = ref('');
 
+const props = defineProps({
+    groups: Array,
+})
+
 </script>
 
 <template>
     <TextInput :model-value="search" placeholder="Search for groups" class="w-full my-5"/>
     <div class="h-[200px] lg:flex-1 overflow-y-auto">
         <div v-if="false" class="text-center text-gray-400">
-            You are not joined to any groups
+            You are not part of any group
         </div>
         <div v-else class="flex gap-3 flex-col h-full">
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
-            <GroupItem image="https://picsum.photos/100"
-                       title="Laravel Developers"
-                       description="Lorem ipsum dolor sit amet"
-            />
+            <GroupItem v-for="group in groups" :group="group"/>
         </div>
     </div>
 </template>

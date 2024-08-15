@@ -24,13 +24,17 @@ class GroupController extends Controller
 
         $group = Group::query()->create($data);
 
-        GroupUser::query()->create([
+        $groupUserData = [
             'user_id' => auth()->id(),
             'created_by' => auth()->id(),
             'group_id' => $group['id'],
             'role' => GroupUserRole::ADMIN->value,
             'status' => GroupUserStatus::APPROVED->value,
-        ]);
+        ];
+
+        GroupUser::query()->create($groupUserData);
+
+        $group = auth()->user()->groups()->where('groups.id', $group['id'])->first();
 
         return response(GroupResource::make($group), 201);
     }

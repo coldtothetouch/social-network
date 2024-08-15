@@ -2,13 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\GroupResource;
 use App\Http\Resources\PostResource;
-use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class HomeController extends Controller
 {
@@ -28,12 +26,15 @@ class HomeController extends Controller
             ->latest('updated_at')
             ->paginate(20);
 
-        if($request->wantsJson()) {
+        if ($request->wantsJson()) {
             return PostResource::collection($posts);
         }
 
+        $groups = auth()->user()->groups()->orderByPivot('role')->orderBy('name')->get();
+
         return Inertia::render('Home', [
             'posts' => PostResource::collection($posts),
+            'groups' => GroupResource::collection($groups),
         ]);
     }
 }

@@ -7,6 +7,14 @@ import {ref} from "vue";
 
 const showCreateGroup = ref(false)
 
+const props = defineProps({
+    groups: Array,
+})
+
+function onGroupCreated(data) {
+    props.groups.unshift(data);
+}
+
 </script>
 
 <template>
@@ -30,7 +38,7 @@ const showCreateGroup = ref(false)
                 </div>
 
                 <DisclosurePanel class="h-full flex flex-col">
-                    <GroupListItems/>
+                    <GroupListItems :groups="groups"/>
                 </DisclosurePanel>
             </Disclosure>
         </div>
@@ -42,10 +50,10 @@ const showCreateGroup = ref(false)
                      class="bg-indigo-500 cursor-pointer py-1 px-3 text-white rounded-lg">Create
                 </div>
             </div>
-            <GroupListItems/>
+            <GroupListItems :groups="groups"/>
         </div>
 
     </div>
 
-    <GroupModal v-model="showCreateGroup"/>
+    <GroupModal v-model="showCreateGroup" @groupCreated="onGroupCreated"/>
 </template>

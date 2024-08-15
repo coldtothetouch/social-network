@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class GroupResource extends JsonResource
 {
@@ -19,13 +21,16 @@ class GroupResource extends JsonResource
 
             'user_id' => $this->user_id,
             'private' => $this->private,
+            'role' => $this->pivot?->role,
+            'status' => $this->pivot?->status,
 
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
+            'short_description' => Str::words($this->description, 10),
 
-            //'cover_path' => $this->cover_path,
-            //'avatar_path' => $this->avatar_path,
+            'cover_url' => Storage::url($this->cover_path),
+            'avatar_url' => Storage::url($this->avatar_path),
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

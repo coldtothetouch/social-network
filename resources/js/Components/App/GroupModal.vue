@@ -24,7 +24,7 @@ const show = computed({
     set: () => emit('update:modelValue', false)
 })
 
-const emit = defineEmits(['update:modelValue', 'hide'])
+const emit = defineEmits(['update:modelValue', 'hide', 'groupCreated'])
 
 function closeModal() {
     show.value = false
@@ -39,7 +39,10 @@ const form = useForm({
 })
 
 function submit() {
-    axios.post(route('group.store'), form).then(() => closeModal())
+    axios.post(route('group.store'), form).then(({data}) => {
+        closeModal()
+        emit('groupCreated', data)
+    })
 }
 
 </script>
