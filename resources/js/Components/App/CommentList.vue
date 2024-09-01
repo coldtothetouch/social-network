@@ -30,7 +30,7 @@ const emit = defineEmits(['commentCreate', 'commentDelete'])
 const comment = ref('')
 
 function storeComment() {
-    axios.post(route('post.comment.store', props.post.id), {
+    axios.post(route('posts.comments.store', props.post.id), {
         comment: comment.value,
         parent_id: props.parentComment?.id || null
     }).then(({data}) => {
@@ -60,7 +60,7 @@ function deleteComment(comment) {
         return false
     }
 
-    axios.delete(route('post.comment.delete', comment))
+    axios.delete(route('posts.comments.destroy', comment))
         .then(() => {
             const commentIndex = props.data.comments.findIndex(c => c.id === comment.id)
             props.data.comments.splice(commentIndex, 1)
@@ -90,7 +90,7 @@ function onCommentDelete(comment) {
 const editingComment = ref(null)
 
 function updateComment() {
-    axios.put(route('post.comment.update', editingComment.value.id), {body: editingComment.value.body})
+    axios.put(route('posts.comments.update', editingComment.value.id), {body: editingComment.value.body})
         .then(({data}) => {
             props.data.comments = props.data.comments.map((c) => {
                 if (c.id === data.id) {
@@ -118,7 +118,7 @@ function stopCommentEdit() {
  */
 
 function sendCommentReaction(comment) {
-    axios.post(route('post.comment.reaction.store', comment), {reaction: 'like'})
+    axios.post(route('reactions.comments.store', comment), {reaction: 'like'})
         .then(({data}) => {
             comment.current_user_has_reaction = data.current_user_has_reaction
             comment.reactions_count = data.reactions_count

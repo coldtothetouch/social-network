@@ -60,7 +60,6 @@ function resetModal()
 {
     form.reset()
 
-    showAllowedExtensionsText.value = false
     attachmentFiles.value = []
     attachmentErrors.value = []
     formError.value = null
@@ -92,9 +91,6 @@ const showAllowedExtensionsText = computed(() => {
 })
 async function onAttachmentChoose(event) {
     for (const file of event.target.files) {
-
-
-
         const myFile = {
             file,
             url: await readFile(file)
@@ -160,7 +156,7 @@ function submit() {
     form.attachments = attachmentFiles.value.map(file => file.file)
     if (props.post.id) {
         form._method = 'PUT'
-        form.post(route('post.update', props.post), {
+        form.post(route('posts.update', props.post), {
             preserveScroll: true,
             onSuccess: () => {
                 closeModal()
@@ -170,7 +166,7 @@ function submit() {
             }
         })
     } else {
-        form.post(route('post.create', form.attachments), {
+        form.post(route('posts.store', form.attachments), {
             preserveScroll: true,
             onSuccess: () => {
                 closeModal()

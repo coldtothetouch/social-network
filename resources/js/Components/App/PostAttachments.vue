@@ -19,7 +19,7 @@ defineEmits(['attachmentClick'])
                 +{{ post.attachments.length - 3 }} more...
             </div>
 
-            <a @click.stop :href="route('post.attachment.download', attachment)"
+            <a @click.stop :href="route('posts.attachments.download', attachment)"
                class="absolute opacity-0 group-hover:opacity-100 transition-all right-5 top-5 h-10 w-10 bg-gray-400 rounded-lg flex justify-center items-center hover:bg-gray-500">
                 <ArrowUpTrayIcon class="text-white w-6 h-6"/>
             </a>

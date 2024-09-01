@@ -5,7 +5,7 @@ import {onMounted, ref} from "vue";
 import {usePage} from "@inertiajs/vue3";
 import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal.vue";
 
-defineProps({
+const props = defineProps({
     posts: Array
 })
 

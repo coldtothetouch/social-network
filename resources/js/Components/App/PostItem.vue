@@ -21,7 +21,7 @@ function openEditModal() {
 
 function deletePost() {
     if (window.confirm('Are you sure to delete this post?')) {
-        router.delete(route('post.destroy', props.post.id), {
+        router.delete(route('posts.destroy', props.post.id), {
             preserveScroll: true
         })
     }
@@ -32,7 +32,7 @@ function openAttachment(index) {
 }
 
 function sendReaction() {
-    axios.post(route('post.reaction.store', props.post), {reaction: 'like'})
+    axios.post(route('reactions.posts.store', props.post), {reaction: 'like'})
         .then(({data}) => {
             props.post.current_user_has_reaction = data.current_user_has_reaction
             props.post.reactions_count = data.reactions_count
@@ -45,7 +45,7 @@ function sendReaction() {
     <div class="border p-5 rounded-lg bg-white shadow">
         <div class="flex justify-between  items-center mb-3">
             <PostUserHeader :post="post"/>
-            <EditDeleteDropdown :user="post.user" @edit="openEditModal" @delete="deletePost"></EditDeleteDropdown>
+            <EditDeleteDropdown :user="post.user" @edit="openEditModal" @delete="deletePost()"></EditDeleteDropdown>
         </div>
         <div class="overflow-hidden" v-if="post.body">
             <ReadMoreOrHide :content="post.body"/>

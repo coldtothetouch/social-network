@@ -2,27 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Enums\ReactionEnum;
 use App\Http\Requests\StorePostRequest;
-use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Requests\UpdatePostRequest;
-use App\Http\Resources\CommentResource;
-use App\Models\Comment;
 use App\Models\Post;
 use App\Models\PostAttachment;
-use App\Models\Reaction;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
@@ -61,10 +50,10 @@ class PostController extends Controller
             Db::rollBack();
         }
 
-        return back();
+        return back(201);
     }
 
-    public function update(Post $post, UpdatePostRequest $request): RedirectResponse
+    public function update(Post $post, UpdatePostRequest $request)
     {
         $allFilePaths = [];
         $data = $request->validated();
@@ -114,43 +103,6 @@ class PostController extends Controller
         return back();
     }
 
-    public function postReaction(Request $request, Post $post): JsonResponse
-    {
-        $data = $request->validate([
-            'reaction' => Rule::enum(ReactionEnum::class)
-        ]);
-
-        $reaction = Reaction::query()
-            ->where('user_id', auth()->id())
-            ->where('reactionable_id', $post->id)
-            ->where('reactionable_type', Post::class)
-            ->first();
-
-        if ($reaction) {
-            $hasReaction = false;
-            $reaction->delete();
-        } else {
-            $hasReaction = true;
-
-            Reaction::query()->create([
-                'reactionable_id' => $post->id,
-                'reactionable_type' => Post::class,
-                'user_id' => auth()->id(),
-                'type' => $data['reaction']
-            ]);
-        }
-
-        $reactionCount = Reaction::query()
-            ->where('reactionable_id', $post->id)
-            ->where('reactionable_type', Post::class)
-            ->count();
-
-        return response()->json([
-            'reactions_count' => $reactionCount,
-            'current_user_has_reaction' => $hasReaction,
-        ]);
-    }
-
     public function download(PostAttachment $attachment): BinaryFileResponse
     {
         // Both approaches are working
@@ -159,82 +111,7 @@ class PostController extends Controller
         //Storage::download("app/public/$attachment->path", $attachment->name);
     }
 
-    public function createComment(Request $request, Post $post): CommentResource
-    {
-
-        $data = $request->validate([
-            'comment' => 'required',
-            'parent_id' => 'nullable|exists:comments,id',
-        ]);
-
-        $comment = Comment::query()->create([
-            'post_id' => $post->id,
-            'user_id' => auth()->id(),
-            'body' => nl2br($data['comment']),
-            'parent_id' => $data['parent_id'] ?? null,
-        ]);
-
-        return new CommentResource($comment, 201);
-    }
-
-    public function updateComment(UpdateCommentRequest $request, Comment $comment): CommentResource
-    {
-        $data = $request->validated();
-
-        $comment->update($data);
-
-        return new CommentResource($comment);
-    }
-
-    public function deleteComment(Comment $comment): Response|Application|ResponseFactory
-    {
-        if ($comment->user_id !== Auth::id()) {
-            return response("You don't have permission to delete this comment", 403);
-        }
-
-        $comment->delete();
-
-        return response('', 204);
-    }
-
-    public function commentReaction(Request $request, Comment $comment): JsonResponse
-    {
-        $data = $request->validate([
-            'reaction' => Rule::enum(ReactionEnum::class)
-        ]);
-
-        $reaction = Reaction::query()
-            ->where('user_id', auth()->id())
-            ->where('reactionable_id', $comment->id)
-            ->where('reactionable_type', Comment::class)
-            ->first();
-
-        if ($reaction) {
-            $hasReaction = false;
-            $reaction->delete();
-        } else {
-            $hasReaction = true;
-
-            Reaction::query()->create([
-                'reactionable_id' => $comment->id,
-                'reactionable_type' => Comment::class,
-                'user_id' => auth()->id(),
-                'type' => $data['reaction']
-            ]);
-        }
-
-        $reactionCount = Reaction::query()
-            ->where('reactionable_id', $comment->id)
-            ->where('reactionable_type', Comment::class)
-            ->count();
-
-        return response()->json([
-            'reactions_count' => $reactionCount,
-            'current_user_has_reaction' => $hasReaction,
-        ]);
-    }
-
-    public function destroy(Post $post): Response|Application|RedirectResponse|ResponseFactory
+    public function destroy(Post $post): Response|RedirectResponse
     {
         if ($post->user_id !== auth()->id()) {
             return response("You don't have permission to delete this post", 403);
