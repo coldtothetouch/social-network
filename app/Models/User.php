@@ -3,16 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     use HasApiTokens;
     use HasFactory;
@@ -40,7 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_users')->withPivot(['role', 'status']);
+        return $this->belongsToMany(Group::class, 'group_users');
     }
 
     public function getSlugOptions(): SlugOptions

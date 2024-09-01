@@ -30,7 +30,7 @@ class HomeController extends Controller
             return PostResource::collection($posts);
         }
 
-        $groups = auth()->user()->groups()->orderByPivot('role')->orderBy('name')->get();
+        $groups = auth()->user()->groups()->with('authGroupUser')->orderBy('role')->get();
 
         return Inertia::render('Home', [
             'posts' => PostResource::collection($posts),
