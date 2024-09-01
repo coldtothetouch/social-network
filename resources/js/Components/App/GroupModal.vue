@@ -39,7 +39,7 @@ const form = useForm({
 })
 
 function submit() {
-    axios.post(route('group.store'), form).then(({data}) => {
+    axios.post(route('groups.store'), form).then(({data}) => {
         closeModal()
         emit('groupCreated', data)
     })

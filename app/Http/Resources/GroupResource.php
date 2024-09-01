@@ -21,16 +21,16 @@ class GroupResource extends JsonResource
 
             'user_id' => $this->user_id,
             'private' => $this->private,
-            'role' => $this->pivot?->role,
-            'status' => $this->pivot?->status,
+            'role' => $this->authGroupUser?->role,
+            'status' => $this->authGroupUser?->status,
 
             'name' => $this->name,
             'slug' => $this->slug,
             'description' => $this->description,
             'short_description' => Str::words($this->description, 10),
 
-            'cover_url' => Storage::url($this->cover_path),
-            'avatar_url' => Storage::url($this->avatar_path),
+            'cover_path' => $this->cover_path ? Storage::url($this->cover_path) : '/img/default_cover.jpg',
+            'avatar_path' => $this->avatar_path ? Storage::url($this->avatar_path) : '/img/default_avatar.webp',
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
