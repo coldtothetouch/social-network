@@ -67,7 +67,8 @@ Route::group([
     Route::delete('{group}', 'destroy')->name('destroy');
     Route::post('{group}/invite', 'invite')->name('invite');
     Route::post('{group}/update-image', 'updateImage')->name('updateImage');
-    Route::get('{token}/join', 'join')->withoutMiddleware('auth')->name('join');
+    Route::get('{token}/accept-invite', 'acceptInvite')->withoutMiddleware('auth')->name('accept-invite');
+    Route::post('{group}/join', 'join')->name('join');
 });
 
 require __DIR__ . '/auth.php';
