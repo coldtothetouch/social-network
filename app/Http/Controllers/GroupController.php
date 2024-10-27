@@ -13,11 +13,13 @@ use App\Models\Group;
 use App\Models\GroupUser;
 use App\Notifications\InvitationApproved;
 use App\Notifications\InvitationInGroup;
+use App\Notifications\NewGroupRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -132,7 +134,7 @@ class GroupController extends Controller
         return back()->with('status', 'User was invited');
     }
 
-    public function join(string $token)
+    public function acceptInvite(string $token)
     {
         $groupUser = GroupUser::query()->where('token', $token)->first();
 
@@ -163,6 +165,29 @@ class GroupController extends Controller
 
         return redirect()->route('groups.show', $group)
             ->with('status', 'You have joined the group');
+    }
+
+    public function join(Group $group)
+    {
+        $status = GroupUserStatus::APPROVED->value;
+        $message = "You have joined the group \"$group->name\"";
+
+        if ($group->private) {
+            $status = GroupUserStatus::PENDING->value;
+            $message = "Your request has been sent";
+
+            Notification::send($group->admins, new NewGroupRequest(auth()->user(), $group));
+        }
+
+        GroupUser::query()->create([
+            'status' => $status,
+            'role' => GroupUserRole::SUBSCRIBER->value,
+            'group_id' => $group->id,
+            'user_id' =>  auth()->id(),
+            'created_by' => auth()->id(),
+        ]);
+
+        return back()->with('status', $message);
     }
 
     public function update(UpdateGroupRequest $request, Group $group)

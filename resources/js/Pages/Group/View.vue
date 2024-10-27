@@ -93,6 +93,10 @@ function resetAvatarImage() {
     ImagesForm.avatar = null
 }
 
+function joinToGroup() {
+    const form = useForm({})
+    form.post(route('groups.join', props.group.slug))
+}
 </script>
 
 <template>
@@ -175,8 +179,8 @@ function resetAvatarImage() {
                         </div>
 
                         <div class="flex gap-2">
-                            <PrimaryButton v-if="group.private && !group.role">Request to join</PrimaryButton>
-                            <PrimaryButton v-if="!group.private && !group.role">Join to group</PrimaryButton>
+                            <PrimaryButton v-if="group.private && !group.role" @click="joinToGroup">Request to join</PrimaryButton>
+                            <PrimaryButton v-if="!group.private && !group.role" @click="joinToGroup">Join to group</PrimaryButton>
 
                             <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">Invite users</PrimaryButton>
 

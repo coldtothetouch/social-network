@@ -28,8 +28,7 @@ class InvitationApproved extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line("User \"{$this->user->name}\" has joined to group \"{$this->group->name}\"")
-                    ->line('Thank you for using our application!');
+                    ->line("User \"{$this->user->name}\" has joined to group \"{$this->group->name}\"");
     }
 
     public function toArray(object $notifiable): array
