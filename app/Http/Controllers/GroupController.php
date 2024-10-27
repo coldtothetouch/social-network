@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Enums\GroupUserRole;
 use App\Enums\GroupUserStatus;
 use App\Http\Requests\InviteUserRequest;
-use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
@@ -15,7 +14,6 @@ use App\Notifications\InvitationApproved;
 use App\Notifications\InvitationInGroup;
 use App\Notifications\NewGroupRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
@@ -23,7 +21,6 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class GroupController extends Controller
 {
