@@ -4,19 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Enums\GroupUserRole;
 use App\Enums\GroupUserStatus;
+use App\Http\Requests\InviteUserRequest;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Notifications\InvitationApproved;
+use App\Notifications\InvitationInGroup;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class GroupController extends Controller
 {
@@ -49,6 +54,7 @@ class GroupController extends Controller
 
         return response(GroupResource::make($group), 201);
     }
+
     public function updateImage(Request $request, Group $group)
     {
         $group->load('authGroupUser');
@@ -97,6 +103,66 @@ class GroupController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
+    }
+
+    public function invite(Group $group, InviteUserRequest $request)
+    {
+        $request->validated();
+
+        $user = $request->user;
+        $groupUser = $request->groupUser;
+
+        $groupUser?->delete();
+
+        $token = str()->random(256);
+        $hours = 24;
+
+        GroupUser::query()->create([
+            'status' => GroupUserStatus::PENDING->value,
+            'token_expiration_date' => Carbon::now()->addHours($hours),
+            'token' => $token,
+            'group_id' => $group->id,
+            'role' => GroupUserRole::SUBSCRIBER->value,
+            'created_by' => auth()->id(),
+            'user_id' => $user->id,
+        ]);
+
+        $user->notify(new InvitationInGroup($group, $token, $hours));
+
+        return back()->with('status', 'User was invited');
+    }
+
+    public function join(string $token)
+    {
+        $groupUser = GroupUser::query()->where('token', $token)->first();
+
+        $errorTitle = '';
+
+        if (!$groupUser) {
+            $errorTitle = 'Token is not valid';
+        } else if ($groupUser->token_date_of_use) {
+            $errorTitle = 'Token is already used';
+        } else if ($groupUser->token_expiration_date < Carbon::now()) {
+            $errorTitle = 'Token is expired';
+        }
+
+        if ($errorTitle) {
+            return Inertia::render('Error', compact('errorTitle'));
+        }
+
+        $groupUser->update([
+            'status' => GroupUserStatus::APPROVED->value,
+            'token_date_of_use' => Carbon::now(),
+        ]);
+
+        $admin = $groupUser->admin;
+        $user = $groupUser->user;
+        $group = $groupUser->group;
+
+        $admin->notify(new InvitationApproved($user, $group));
+
+        return redirect()->route('groups.show', $group)
+            ->with('status', 'You have joined the group');
     }
 
     public function update(UpdateGroupRequest $request, Group $group)

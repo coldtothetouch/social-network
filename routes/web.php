@@ -65,8 +65,9 @@ Route::group([
     Route::post('', 'store')->name('store');
     Route::patch('{group}', 'update')->name('update');
     Route::delete('{group}', 'destroy')->name('destroy');
-
+    Route::post('{group}/invite', 'invite')->name('invite');
     Route::post('{group}/update-image', 'updateImage')->name('updateImage');
+    Route::get('{token}/join', 'join')->withoutMiddleware('auth')->name('join');
 });
 
 require __DIR__ . '/auth.php';

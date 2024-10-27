@@ -130,7 +130,7 @@ function sendCommentReaction(comment) {
 <template>
     <div class="flex gap-3 items-center mb-3">
         <a href="javascript:void(0)" class="self-start">
-            <img :src="user.avatar_url"
+            <img :src="user.avatar_path"
                  class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square"
                  alt="avatar">
         </a>

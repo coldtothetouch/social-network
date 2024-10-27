@@ -9,6 +9,7 @@ import {computed, ref} from "vue";
 import {CheckIcon} from "@heroicons/vue/24/outline"
 import {XMarkIcon, CameraIcon} from "@heroicons/vue/24/solid"
 import DangerButton from "@/Components/DangerButton.vue";
+import InviteUserModal from "@/Components/App/InviteUserModal.vue";
 
 const user = usePage().props.auth.user
 const coverImageSrc = ref('')
@@ -18,10 +19,6 @@ const showFlash = ref(true)
 const props = defineProps({
     group: {
         type: Object,
-    },
-    follower_count: {
-        type: Number,
-        required: true,
     },
     status: {
         type: String,
@@ -35,6 +32,8 @@ const ImagesForm = useForm({
 });
 
 const currentUserIsAdmin = computed(() => props.group.role === 'admin')
+
+const showInviteUseModal = ref(false)
 
 function onCoverChange(event) {
     ImagesForm.cover = event.target.files[0]
@@ -97,6 +96,7 @@ function resetAvatarImage() {
 </script>
 
 <template>
+    <InviteUserModal v-model="showInviteUseModal"/>
     <AuthenticatedLayout>
         <div class="max-w-[1300px] mx-auto h-full overflow-y-auto">
             <div
@@ -171,14 +171,14 @@ function resetAvatarImage() {
                     <div class="flex justify-between items-center flex-1 p-4">
                         <div>
                             <h2 class="font-bold text-lg">{{ group.name }}</h2>
-                            <p class="text-xs text-gray-500">{{ props.follower_count || 0 }} follower(s)</p>
+                            <p class="text-xs text-gray-500">{{ props.group.follower_count || 0 }} follower(s)</p>
                         </div>
 
                         <div class="flex gap-2">
                             <PrimaryButton v-if="group.private && !group.role">Request to join</PrimaryButton>
                             <PrimaryButton v-if="!group.private && !group.role">Join to group</PrimaryButton>
 
-                            <PrimaryButton v-if="currentUserIsAdmin">Invite users</PrimaryButton>
+                            <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">Invite users</PrimaryButton>
 
                             <DangerButton v-if="group.role && group.role !== 'admin'">Leave group</DangerButton>
                         </div>

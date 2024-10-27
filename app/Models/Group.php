@@ -12,7 +12,6 @@ use Spatie\Sluggable\SlugOptions;
 
 class Group extends Model
 {
-    use HasFactory;
     use SoftDeletes;
     use HasSlug;
 
@@ -48,7 +47,7 @@ class Group extends Model
         return $this->hasOne(GroupUser::class)->where('user_id', auth()->id());
     }
 
-    public function isAdmin()
+    public function isAdmin(): bool
     {
         return $this->authGroupUser->role === GroupUserRole::ADMIN->value;
     }
