@@ -2,7 +2,6 @@
 
 import TextInput from "@/Components/TextInput.vue";
 import {ref} from "vue";
-import FollowingItem from "@/Components/App/FollowingItem.vue";
 
 const search = ref('');
 
@@ -15,45 +14,6 @@ const search = ref('');
             You don't have friends yet
         </div>
         <div v-else class="flex flex-col gap-3">
-            <FollowingItem image="https://picsum.photos/100"
-                           name="Elon Musk"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
-            <FollowingItem image="https://picsum.photos/100"
-                           name="John Doe"
-            />
         </div>
     </div>
 </template>

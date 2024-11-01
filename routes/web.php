@@ -69,6 +69,7 @@ Route::group([
     Route::post('{group}/update-image', 'updateImage')->name('updateImage');
     Route::get('{token}/accept-invite', 'acceptInvite')->withoutMiddleware('auth')->name('accept-invite');
     Route::post('{group}/join', 'join')->name('join');
+    Route::post('{group}/approve-user', 'approveUser')->name('users.approve');
 });
 
 require __DIR__ . '/auth.php';

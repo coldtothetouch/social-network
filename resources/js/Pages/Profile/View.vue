@@ -169,7 +169,7 @@ function resetAvatarImage() {
                     <div class="flex justify-between items-center flex-1 p-4">
                         <div>
                             <h2 class="font-bold text-lg">{{ user.name }}</h2>
-                            <p class="text-xs text-gray-500">{{ followerCount || 0 }} follower(s)</p>
+                            <p class="text-xs text-gray-500">{{ user.followers_count }} follower(s)</p>
                         </div>
 
                         <div v-if="!isMyProfile">

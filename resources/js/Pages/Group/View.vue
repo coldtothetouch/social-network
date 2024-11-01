@@ -10,6 +10,8 @@ import {CheckIcon} from "@heroicons/vue/24/outline"
 import {XMarkIcon, CameraIcon} from "@heroicons/vue/24/solid"
 import DangerButton from "@/Components/DangerButton.vue";
 import InviteUserModal from "@/Components/App/InviteUserModal.vue";
+import UserListItem from "@/Components/App/UserListItem.vue";
+import TextInput from "@/Components/TextInput.vue";
 
 const user = usePage().props.auth.user
 const coverImageSrc = ref('')
@@ -32,6 +34,9 @@ const ImagesForm = useForm({
 });
 
 const currentUserIsAdmin = computed(() => props.group.role === 'admin')
+const isJoinedGroup = computed(() => !!props.group.role && props.group.status === 'approved')
+
+const search = ref('')
 
 const showInviteUseModal = ref(false)
 
@@ -97,6 +102,23 @@ function joinToGroup() {
     const form = useForm({})
     form.post(route('groups.join', props.group.slug))
 }
+
+function approveUser(user) {
+    const form = useForm({
+        user_id: user.id,
+        action: 'approve'
+    })
+    form.post(route('groups.users.approve', props.group))
+}
+
+function rejectUser(user) {
+    const form = useForm({
+        user_id: user.id,
+        action: 'reject'
+    })
+    form.post(route('groups.users.approve', props.group))
+}
+
 </script>
 
 <template>
@@ -179,27 +201,35 @@ function joinToGroup() {
                         </div>
 
                         <div class="flex gap-2">
-                            <PrimaryButton v-if="group.private && !group.role" @click="joinToGroup">Request to join</PrimaryButton>
-                            <PrimaryButton v-if="!group.private && !group.role" @click="joinToGroup">Join to group</PrimaryButton>
+                            <PrimaryButton v-if="group.private && !group.role" @click="joinToGroup">Request to join
+                            </PrimaryButton>
+                            <PrimaryButton v-if="group.private && group.status === 'pending'"
+                                           class="!bg-gray-400 cursor-not-allowed">Request sent
+                            </PrimaryButton>
+                            <PrimaryButton v-if="!group.private && !group.role" @click="joinToGroup">Join to group
+                            </PrimaryButton>
 
-                            <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">Invite users</PrimaryButton>
+                            <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">Invite users
+                            </PrimaryButton>
 
-                            <DangerButton v-if="group.role && group.role !== 'admin'">Leave group</DangerButton>
+                            <DangerButton v-if="group.role && group.role !== 'admin' && group.status !== 'pending'">
+                                Leave group
+                            </DangerButton>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="">
+            <div>
                 <TabGroup>
                     <TabList class="flex space-x-1 bg-blue-900/20 bg-white ">
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
-                        <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Followers" :selected="selected"/>
+                        <Tab v-if="isJoinedGroup" v-slot="{ selected }" as="template">
+                            <TabItem text="Users" :selected="selected"/>
                         </Tab>
-                        <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="Followings" :selected="selected"/>
+                        <Tab v-if="currentUserIsAdmin" v-slot="{ selected }" as="template">
+                            <TabItem text="Requests" :selected="selected"/>
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Photos" :selected="selected"/>
@@ -214,13 +244,25 @@ function joinToGroup() {
                             class='shadow bg-white p-5'>
                             Posts
                         </TabPanel>
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            Followers
+                        <TabPanel v-if="isJoinedGroup">
+                            <TextInput :model-value="search" placeholder="Type to search" class="w-full my-2"/>
+                            <div class="grid grid-cols-2 gap-2">
+                                <UserListItem
+                                    class="bg-white shadow-md hover:border-2 hover:border-indigo-500 hover:bg-white"
+                                    v-for="user in group.users" :user="user" :key="user.id"/>
+                            </div>
                         </TabPanel>
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            Followings
+                        <TabPanel v-if="currentUserIsAdmin">
+                            <div v-if="group.pending_users.length" class="grid grid-cols-2 gap-2">
+                                <UserListItem @reject="rejectUser(user)" @approve="approveUser(user)"
+                                              class="bg-white shadow-md hover:border-2 hover:border-indigo-500 hover:bg-white"
+                                              v-for="user in group.pending_users" :user="user" :for-approve="true"
+                                              :key="user.id"/>
+
+                            </div>
+                            <div v-else class="text-center mt-10 text-xl">
+                                No pending users
+                            </div>
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>

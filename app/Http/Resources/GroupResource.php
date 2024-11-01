@@ -16,6 +16,7 @@ class GroupResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $approvedUsers = $this->approvedUsers;
         return [
             'id' => $this->id,
 
@@ -32,7 +33,10 @@ class GroupResource extends JsonResource
             'cover_path' => $this->cover_path ? Storage::url($this->cover_path) : '/img/default_cover.jpg',
             'avatar_path' => $this->avatar_path ? Storage::url($this->avatar_path) : '/img/default_avatar.webp',
 
-            'follower_count' => 100,
+            'follower_count' => $approvedUsers->count() ?? 0,
+
+            'users' => UserResource::collection($approvedUsers),
+            'pending_users' => UserResource::collection($this->pendingUsers),
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
