@@ -256,14 +256,13 @@ class GroupController extends Controller
         return back();
     }
 
-    public
-    function update(UpdateGroupRequest $request, Group $group)
+    public function update(UpdateGroupRequest $request, Group $group)
     {
-        //
+        $group->update($request->validated());
+        return back()->with('status', 'Group was updated');
     }
 
-    public
-    function destroy(Group $group)
+    public function destroy(Group $group)
     {
         //
     }

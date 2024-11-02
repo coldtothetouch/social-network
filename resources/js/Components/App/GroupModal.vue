@@ -10,10 +10,7 @@ import {
 
 import {XMarkIcon} from "@heroicons/vue/24/outline"
 import {useForm} from "@inertiajs/vue3";
-import TextInput from "@/Components/TextInput.vue";
-import Checkbox from "@/Components/Checkbox.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextareaInput from "@/Components/App/TextareaInput.vue";
+import GroupForm from "@/Components/App/GroupForm.vue";
 
 const props = defineProps({
     modelValue: Boolean
@@ -24,6 +21,12 @@ const show = computed({
     set: () => emit('update:modelValue', false)
 })
 
+const form = useForm({
+    name: '',
+    private: false,
+    description: '',
+})
+
 const emit = defineEmits(['update:modelValue', 'hide', 'groupCreated'])
 
 function closeModal() {
@@ -31,12 +34,6 @@ function closeModal() {
     emit('hide')
     form.reset()
 }
-
-const form = useForm({
-    name: '',
-    private: false,
-    description: '',
-})
 
 function submit() {
     axios.post(route('groups.store'), form).then(({data}) => {
@@ -91,20 +88,7 @@ function submit() {
                                 </DialogTitle>
 
                                 <div class="p-5">
-                                    <div class="flex flex-col w-full gap-3 mb-3">
-                                        <div>
-                                            <InputLabel>Group name</InputLabel>
-                                            <TextInput v-model="form.name"/>
-                                        </div>
-                                        <div class="flex items-center gap-2">
-                                            <Checkbox v-model:checked="form.private"/>
-                                            Private group
-                                        </div>
-                                        <div>
-                                            <InputLabel>About group</InputLabel>
-                                            <TextareaInput class="w-full" v-model="form.description"/>
-                                        </div>
-                                    </div>
+                                    <GroupForm :form="form"/>
                                     <div class="flex gap-5">
                                         <button @click="submit"
                                                 class="flex flex-1 justify-center items-center gap-1 border py-2 px-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-400"

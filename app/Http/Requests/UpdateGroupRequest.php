@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Group;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateGroupRequest extends FormRequest
@@ -11,7 +12,10 @@ class UpdateGroupRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user_id === auth()->id();
+        /** @var Group $group */
+        $group = $this->route('group');
+
+        return $group->isAdmin();
     }
 
     /**
