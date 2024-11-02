@@ -24,11 +24,10 @@ services:
         depends_on:
             - mysql
             - redis
-            - meilisearch
             - mailpit
             - selenium
     mysql:
-        image: 'mysql/mysql-server:8.0'
+        image: 'mysql/mysql-server:latest'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
@@ -64,25 +63,6 @@ services:
                 - CMD
                 - redis-cli
                 - ping
-            retries: 3
-            timeout: 5s
-    meilisearch:
-        image: 'getmeili/meilisearch:latest'
-        ports:
-            - '${FORWARD_MEILISEARCH_PORT:-7700}:7700'
-        environment:
-            MEILI_NO_ANALYTICS: '${MEILISEARCH_NO_ANALYTICS:-false}'
-        volumes:
-            - 'sail-meilisearch:/meili_data'
-        networks:
-            - sail
-        healthcheck:
-            test:
-                - CMD
-                - wget
-                - '--no-verbose'
-                - '--spider'
-                - 'http://localhost:7700/health'
             retries: 3
             timeout: 5s
     mailpit:

@@ -65,7 +65,8 @@ function updateCoverImage() {
             }, 3000)
             resetCoverImage()
             showFlash.value = true
-        }
+        },
+        preserveScroll: true
     })
 }
 
@@ -89,7 +90,8 @@ function updateAvatarImage() {
             }, 3000)
             resetAvatarImage()
             showFlash.value = true
-        }
+        },
+        preserveScroll: true
     })
 }
 
@@ -100,7 +102,9 @@ function resetAvatarImage() {
 
 function joinToGroup() {
     const form = useForm({})
-    form.post(route('groups.join', props.group.slug))
+    form.post(route('groups.join', props.group.slug), {
+        preserveScroll: true
+    })
 }
 
 function approveUser(user) {
@@ -108,7 +112,9 @@ function approveUser(user) {
         user_id: user.id,
         action: 'approve'
     })
-    form.post(route('groups.users.approve', props.group))
+    form.post(route('groups.users.approve', props.group), {
+        preserveScroll: true
+    })
 }
 
 function rejectUser(user) {
@@ -116,9 +122,20 @@ function rejectUser(user) {
         user_id: user.id,
         action: 'reject'
     })
-    form.post(route('groups.users.approve', props.group))
+    form.post(route('groups.users.approve', props.group), {
+        preserveScroll: true
+    })
 }
 
+function changeRole(user, role) {
+    const form = useForm({
+        user_id: user.id,
+        role: role,
+    })
+    form.post(route('groups.role.change', props.group), {
+        preserveScroll: true
+    })
+}
 </script>
 
 <template>
@@ -201,18 +218,28 @@ function rejectUser(user) {
                         </div>
 
                         <div class="flex gap-2">
-                            <PrimaryButton v-if="group.private && !group.role" @click="joinToGroup">Request to join
+                            <PrimaryButton v-if="group.private && !group.role" @click="joinToGroup">
+                                Request to join
                             </PrimaryButton>
                             <PrimaryButton v-if="group.private && group.status === 'pending'"
-                                           class="!bg-gray-400 cursor-not-allowed">Request sent
+                                           class="!bg-gray-400 cursor-not-allowed">
+                                Request sent
                             </PrimaryButton>
-                            <PrimaryButton v-if="!group.private && !group.role" @click="joinToGroup">Join to group
+                            <PrimaryButton v-if="!group.private && !group.role" @click="joinToGroup">
+                                Join to group
                             </PrimaryButton>
 
-                            <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">Invite users
+                            <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">
+                                Invite users
                             </PrimaryButton>
 
-                            <DangerButton v-if="group.role && group.role !== 'admin' && group.status !== 'pending'">
+                            <PrimaryButton v-if="group.private && group.status === 'rejected'"
+                                           class="cursor-default !bg-gray-400 hover:bg-gray-400">
+                                Request Rejected
+                            </PrimaryButton>
+
+                            <DangerButton
+                                v-if="group.role && group.role !== 'admin' && group.status !== 'pending' && group.status !== 'rejected'">
                                 Leave group
                             </DangerButton>
                         </div>
@@ -248,13 +275,17 @@ function rejectUser(user) {
                             <TextInput :model-value="search" placeholder="Type to search" class="w-full my-2"/>
                             <div class="grid grid-cols-2 gap-2">
                                 <UserListItem
+                                    :disable-user-role-dropdown="group.user_id === user.id"
+                                    :show-user-role-dropdown="currentUserIsAdmin"
+                                    @role-change="changeRole"
                                     class="bg-white shadow-md hover:border-2 hover:border-indigo-500 hover:bg-white"
                                     v-for="user in group.users" :user="user" :key="user.id"/>
                             </div>
                         </TabPanel>
                         <TabPanel v-if="currentUserIsAdmin">
                             <div v-if="group.pending_users.length" class="grid grid-cols-2 gap-2">
-                                <UserListItem @reject="rejectUser(user)" @approve="approveUser(user)"
+                                <UserListItem @reject="rejectUser(user)"
+                                              @approve="approveUser(user)"
                                               class="bg-white shadow-md hover:border-2 hover:border-indigo-500 hover:bg-white"
                                               v-for="user in group.pending_users" :user="user" :for-approve="true"
                                               :key="user.id"/>

@@ -17,7 +17,3 @@ const search = ref('');
         </div>
     </div>
 </template>
-
-<style scoped>
-
-</style>

@@ -10,16 +10,19 @@ use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Models\User;
 use App\Notifications\InvitationApproved;
 use App\Notifications\InvitationInGroup;
 use App\Notifications\NewGroupRequest;
 use App\Notifications\RequestApproved;
+use App\Notifications\RoleChanged;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -195,7 +198,7 @@ class GroupController extends Controller
         }
 
         $data = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'required',
             'action' => 'required|string'
         ]);
 
@@ -220,6 +223,34 @@ class GroupController extends Controller
             $user->notify(new RequestApproved($groupUser->group, $user, $approved));
 
             back()->with('status', "User $user->name was " . ($approved ? 'approved' : 'rejected'));
+        }
+
+        return back();
+    }
+
+    public function changeRole(Group $group, Request $request)
+    {
+        if (!$group->isAdmin()) {
+            return response('Forbidden', 403);
+        }
+
+        $data = $request->validate([
+            'user_id' => 'required',
+            'role' => ['required', 'string', Rule::enum(GroupUserRole::class)],
+        ]);
+
+        if ($group->isOwner($data['user_id'])) {
+            return response('Forbidden', 403);
+        }
+
+        $groupUser = GroupUser::query()
+            ->where('user_id', $data['user_id'])
+            ->where('group_id', $group->id)
+            ->first();
+
+        if ($groupUser) {
+            $groupUser->update(['role' => $data['role']]);
+            $groupUser->user->notify(new RoleChanged($group, $data['role']));
         }
 
         return back();

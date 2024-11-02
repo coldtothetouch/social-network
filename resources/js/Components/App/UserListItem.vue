@@ -1,6 +1,7 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import {Link} from '@inertiajs/vue3'
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+
 defineProps({
     user: {
         type: Object,
@@ -9,21 +10,39 @@ defineProps({
     forApprove: {
         type: Boolean,
         default: false,
+    },
+    showUserRoleDropdown: {
+        type: Boolean,
+        default: false,
+    },
+    disableUserRoleDropdown: {
+        type: Boolean,
+        default: false,
     }
 })
-
-const emit = defineEmits(['approve', 'reject'])
+const emit = defineEmits(['approve', 'reject', 'roleChange'])
 </script>
 
 <template>
-    <Link :href="route('profile.index', user)" class="flex gap-3 items-center py-3 px-5 hover:bg-gray-200 rounded-md cursor-pointer">
-        <img :src="user.avatar_path" class="size-[45px] rounded-full" alt="avatar">
+    <div class="flex gap-3 items-center py-3 px-5 hover:bg-gray-200 rounded-md">
+        <Link :href="route('profile.index', user)">
+            <img :src="user.avatar_path" class="size-[45px] rounded-full" alt="avatar">
+        </Link>
         <div class="flex justify-between flex-1 items-center">
-            <h3 class="text-md font-semibold">{{ user.name }}</h3>
-           <div class="flex gap-2">
-               <PrimaryButton v-if="forApprove" @click.prevent="$emit('approve')">Approve</PrimaryButton>
-               <PrimaryButton v-if="forApprove" @click.prevent="$emit('reject')">Reject</PrimaryButton>
-           </div>
+            <Link :href="route('profile.index', user)">
+                <h3 class="text-md font-semibold hover:text-underline">{{ user.name }}</h3>
+            </Link>
+            <div v-if="forApprove" class="flex gap-2">
+                <PrimaryButton @click.prevent="$emit('approve')">Approve</PrimaryButton>
+                <PrimaryButton @click.prevent="$emit('reject')">Reject</PrimaryButton>
+            </div>
+            <div v-if="showUserRoleDropdown">
+                <select :disabled="disableUserRoleDropdown" @change="$emit('roleChange', user, $event.target.value)"
+                    class="rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm/6">
+                    <option :selected="user.role === 'admin'">admin</option>
+                    <option :selected="user.role === 'subscriber'">subscriber</option>
+                </select>
+            </div>
         </div>
-    </Link>
+    </div>
 </template>

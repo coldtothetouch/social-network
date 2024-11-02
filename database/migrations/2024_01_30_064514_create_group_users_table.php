@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamp('token_expiration_date')->nullable();
 
             $table->string('role', 25);
-            $table->string('status', 25); // pending | approved
+            $table->string('status', 25); // pending | approved | rejected
 
             $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(Group::class)->constrained();

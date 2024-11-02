@@ -70,6 +70,7 @@ Route::group([
     Route::get('{token}/accept-invite', 'acceptInvite')->withoutMiddleware('auth')->name('accept-invite');
     Route::post('{group}/join', 'join')->name('join');
     Route::post('{group}/approve-user', 'approveUser')->name('users.approve');
+    Route::post('{group}/change-role', 'changeRole')->name('role.change');
 });
 
 require __DIR__ . '/auth.php';

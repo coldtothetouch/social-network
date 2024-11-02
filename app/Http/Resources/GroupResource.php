@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
@@ -9,14 +10,14 @@ use Illuminate\Support\Str;
 
 class GroupResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
-        $approvedUsers = $this->approvedUsers;
+        $approvedUsers = User::query()
+            ->select(['users.*', 'gu.role', 'gu.status'])
+            ->join('group_users as gu', 'gu.user_id', 'users.id')
+            ->where('gu.group_id', $this->id)
+            ->get();
+
         return [
             'id' => $this->id,
 
@@ -35,8 +36,8 @@ class GroupResource extends JsonResource
 
             'follower_count' => $approvedUsers->count() ?? 0,
 
-            'users' => UserResource::collection($approvedUsers),
-            'pending_users' => UserResource::collection($this->pendingUsers),
+            'users' => GroupUserResource::collection($approvedUsers),
+            'pending_users' => GroupUserResource::collection($this->pendingUsers),
 
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

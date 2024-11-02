@@ -53,6 +53,11 @@ class Group extends Model
         return $this->authGroupUser->role === GroupUserRole::ADMIN->value;
     }
 
+    public function isOwner($userId): bool
+    {
+        return $this->user_id === $userId;
+    }
+
     public function admins(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_users')
