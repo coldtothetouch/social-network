@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\GroupUserStatus;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,15 +17,17 @@ class GroupResource extends JsonResource
             ->select(['users.*', 'gu.role', 'gu.status'])
             ->join('group_users as gu', 'gu.user_id', 'users.id')
             ->where('gu.group_id', $this->id)
-            ->get();
+            ->where('gu.status', GroupUserStatus::APPROVED->value);
+
+        $authGroupUser = $this->authGroupUser;
 
         return [
             'id' => $this->id,
 
             'user_id' => $this->user_id,
             'private' => $this->private,
-            'role' => $this->authGroupUser?->role,
-            'status' => $this->authGroupUser?->status,
+            'role' => $authGroupUser?->role,
+            'status' => $authGroupUser?->status,
 
             'name' => $this->name,
             'slug' => $this->slug,
@@ -36,7 +39,7 @@ class GroupResource extends JsonResource
 
             'follower_count' => $approvedUsers->count() ?? 0,
 
-            'users' => GroupUserResource::collection($approvedUsers),
+            'users' => !!$this->private && !$authGroupUser?->isApproved() ? null : GroupUserResource::collection($approvedUsers->get()),
             'pending_users' => GroupUserResource::collection($this->pendingUsers),
 
             'created_at' => $this->created_at,

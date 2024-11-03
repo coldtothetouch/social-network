@@ -5,7 +5,7 @@ import {ChatBubbleLeftEllipsisIcon, HandThumbUpIcon} from "@heroicons/vue/24/out
 import IndigoButton from "@/Components/App/IndigoButton.vue";
 import EditDeleteDropdown from "@/Components/App/EditDeleteDropdown.vue";
 import ReadMoreOrHide from "@/Components/App/ReadMoreOrHide.vue";
-import {usePage} from "@inertiajs/vue3";
+import {usePage, Link} from "@inertiajs/vue3";
 import {ref} from "vue";
 import axios from "axios";
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
@@ -129,11 +129,11 @@ function sendCommentReaction(comment) {
 
 <template>
     <div class="flex gap-3 items-center mb-3">
-        <a href="javascript:void(0)" class="self-start">
+        <Link :href="route('profile.index', user)">
             <img :src="user.avatar_path"
                  class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square"
                  alt="avatar">
-        </a>
+        </Link>
         <div class="flex flex-1">
             <TextareaInput v-model="comment" placeholder="Enter your comment here..." rows="1"
                            class="w-full resize-none rounded-r-none max-h-[160px] overflow-auto"/>
@@ -144,16 +144,18 @@ function sendCommentReaction(comment) {
         <div v-for="comment of props.data.comments" :key="comment.id">
 
             <div class="flex gap-3 items-center mb-3">
-                <a href="javascript:void(0)" class="self-start">
+                <Link :href="route('profile.index', comment.user)" class="self-start">
                     <img :src="comment.user.avatar_url"
                          class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square"
                          alt="avatar">
-                </a>
+                </Link>
 
                 <div class="w-full flex flex-col">
                     <div class="flex justify-between items-center">
                         <h4 class="text-lg font-semibold">
-                            <a href="javascript:void(0)" class="hover:underline">{{ comment.user.name }}</a>
+                            <Link :href="route('profile.index', comment.user)" class="hover:underline">
+                                {{ comment.user.name }}
+                            </Link>
                         </h4>
 
                         <small class="text-xs text-gray-400">{{ comment.created_at }}</small>

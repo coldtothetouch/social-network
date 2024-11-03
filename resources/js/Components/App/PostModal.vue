@@ -18,6 +18,10 @@ const props = defineProps({
         type: Object,
         required: true
     },
+    group: {
+        type: Object,
+        default: null,
+    },
     modelValue: Boolean
 })
 
@@ -72,6 +76,7 @@ function resetModal()
 const form = useForm({
     body: '',
     attachments: [],
+    group_id: null,
     deleted_file_ids: [],
     _method: 'POST'
 })
@@ -153,7 +158,10 @@ const attachmentErrors = ref([])
 const formError = ref(null)
 
 function submit() {
-    form.attachments = attachmentFiles.value.map(file => file.file)
+    if (props.group) {
+        form.group_id = props.group.id
+    }
+    form.attachments = attachmentFiles.value.map(file => file.file);
     if (props.post.id) {
         form._method = 'PUT'
         form.post(route('posts.update', props.post), {
@@ -179,7 +187,7 @@ function submit() {
 }
 
 function processErrors(errors) {
-    formError.value = errors.attachments
+    formError.value = errors
 
     for (const key in errors) {
         if (key.includes('.')) {
@@ -254,6 +262,11 @@ function restoreFile(file) {
                                         <div v-if="formError"
                                              class="border-l-8 border-red-300 text-red-700 bg-red-100 p-3 mt-3">
                                             {{ formError }}
+                                        </div>
+
+                                        <div v-if="formError?.group_id"
+                                             class="border-l-8 border-red-300 text-red-700 bg-red-100 p-3 mt-3">
+                                            {{ formError.group_id }}
                                         </div>
 
                                         <div class="grid md:grid-cols-2 lg:grid-cols-3 sm:grid-cols-1 gap-3 mt-3"

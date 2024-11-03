@@ -2,10 +2,7 @@
 
 namespace App\Http\Requests;
 
-use App\Models\Post;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\File;
 
 class UpdatePostRequest extends StorePostRequest
 {

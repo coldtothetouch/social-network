@@ -1,18 +1,19 @@
 <script setup>
 import {useForm, usePage} from "@inertiajs/vue3";
-import {TabGroup, TabList, Tab, TabPanels, TabPanel} from '@headlessui/vue'
+import {Tab, TabGroup, TabList, TabPanel, TabPanels} from '@headlessui/vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
-import Edit from "@/Pages/Profile/Edit.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {computed, ref} from "vue";
 import {CheckIcon} from "@heroicons/vue/24/outline"
-import {XMarkIcon, CameraIcon} from "@heroicons/vue/24/solid"
+import {CameraIcon, XMarkIcon} from "@heroicons/vue/24/solid"
 import DangerButton from "@/Components/DangerButton.vue";
 import InviteUserModal from "@/Components/App/InviteUserModal.vue";
 import UserListItem from "@/Components/App/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
 import GroupForm from "@/Components/App/GroupForm.vue";
+import PostList from "@/Components/App/PostList.vue";
+import CreatePost from "@/Components/App/CreatePost.vue";
 
 const user = usePage().props.auth.user
 const coverImageSrc = ref('')
@@ -23,6 +24,7 @@ const props = defineProps({
     group: {
         type: Object,
     },
+    posts: Object,
     status: {
         type: String,
     },
@@ -46,7 +48,6 @@ const aboutForm = useForm({
     private: !!props.group.private,
     description: props.group.description,
 })
-
 
 function onCoverChange(event) {
     ImagesForm.cover = event.target.files[0]
@@ -262,7 +263,7 @@ function updateGroup() {
             </div>
             <div>
                 <TabGroup>
-                    <TabList class="flex space-x-1 bg-blue-900/20 bg-white ">
+                    <TabList class="flex space-x-1 bg-blue-900/20 bg-white">
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
@@ -276,17 +277,15 @@ function updateGroup() {
                             <TabItem text="Photos" :selected="selected"/>
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="My Profile" :selected="selected"/>
-                        </Tab>
-                        <Tab v-slot="{ selected }" as="template">
                             <TabItem text="About" :selected="selected"/>
                         </Tab>
                     </TabList>
 
                     <TabPanels class="mt-2">
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            Posts
+                        <TabPanel>
+                            <CreatePost v-if="group.status === 'approved'" :group="group"/>
+                            <PostList v-if="!group.private || group.status === 'approved'" :posts="posts.data"/>
+                            <div v-else class="text-xl text-center mt-10">You don't have permission to view this content</div>
                         </TabPanel>
                         <TabPanel v-if="isJoinedGroup">
                             <TextInput :model-value="search" placeholder="Type to search" class="w-full my-2"/>
@@ -315,11 +314,6 @@ function updateGroup() {
                         <TabPanel
                             class='shadow bg-white p-5'>
                             Photos
-                        </TabPanel>
-                        <TabPanel
-                            v-if="currentUserIsAdmin"
-                            class='shadow'>
-                            <Edit/>
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>

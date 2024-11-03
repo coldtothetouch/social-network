@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use App\Enums\GroupUserStatus;
+use App\Models\GroupUser;
 use App\Models\PostAttachment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
@@ -41,7 +43,18 @@ class StorePostRequest extends FormRequest
                 'file',
                 File::types(self::$allowedExtensions)
             ],
-            'body' => 'nullable|string'
+            'body' => 'nullable|string',
+            'group_id' => ['nullable', function ($attribute, $value, $fail) {
+                $groupUser = GroupUser::query()
+                    ->where('group_id', $value)
+                    ->where('user_id', auth()->id())
+                    ->where('status', GroupUserStatus::APPROVED->value)
+                    ->exists();
+
+                if (!$groupUser) {
+                    $fail('You can not make post in this group.');
+                }
+            }],
         ];
     }
 

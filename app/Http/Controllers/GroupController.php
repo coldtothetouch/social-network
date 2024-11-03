@@ -8,8 +8,10 @@ use App\Http\Requests\InviteUserRequest;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
+use App\Http\Resources\PostResource;
 use App\Models\Group;
 use App\Models\GroupUser;
+use App\Models\Post;
 use App\Models\User;
 use App\Notifications\InvitationApproved;
 use App\Notifications\InvitationInGroup;
@@ -28,11 +30,35 @@ use Inertia\Response;
 
 class GroupController extends Controller
 {
-    public function show(Group $group)
+    public function show(Request $request, Group $group)
     {
+        $posts = [];
+
+        if ($group->hasApprovedUser(auth()->id())) {
+            $posts = Post::query()
+                ->withCount(['reactions', 'comments'])
+                ->with([
+                    'user', 'group', 'attachments',
+                    'reactions' => function ($query) {
+                        $query->where('user_id', auth()->id());
+                    },
+                    'comments' => function ($query) {
+                        $query->withCount('likes');
+                    }
+                ])
+                ->where('group_id', $group->id)
+                ->latest('updated_at')
+                ->paginate(20);
+        }
+
+        if ($request->wantsJson()) {
+            return PostResource::collection($posts);
+        }
+
         return Inertia::render('Group/View', [
             'group' => GroupResource::make($group->load('authGroupUser')),
             'status' => session('status'),
+            'posts' => PostResource::collection($posts),
         ]);
     }
 

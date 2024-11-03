@@ -50,7 +50,7 @@ class PostController extends Controller
             Db::rollBack();
         }
 
-        return back(201);
+        return back();
     }
 
     public function update(Post $post, UpdatePostRequest $request)

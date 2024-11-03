@@ -1,12 +1,12 @@
 <script setup>
 import PostItem from "@/Components/App/PostItem.vue";
 import PostModal from "@/Components/App/PostModal.vue";
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import {usePage} from "@inertiajs/vue3";
 import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal.vue";
 
 const props = defineProps({
-    posts: Array
+    posts: Object,
 })
 
 const authUser = usePage().props.auth.user
@@ -49,9 +49,16 @@ function loadMore() {
 const page = usePage();
 
 const allPosts = ref({
-    data: page.props.posts.data,
-    next: page.props.posts.links.next,
+    data: [],
+    next: null,
 })
+
+watch(() => page.props.posts, () => {
+    if (page.props.posts.data) {
+        allPosts.value.data = props.posts
+        allPosts.value.next = usePage().props.posts.links.next
+    }
+}, {immediate: true})
 
 onMounted(() => {
     const observer = new IntersectionObserver((entries) =>

@@ -1,4 +1,5 @@
 <script setup>
+import {Link} from "@inertiajs/vue3";
 
 defineProps({
     post: Object,
@@ -12,16 +13,16 @@ defineProps({
 
 <template>
     <div class="flex gap-3 items-center">
-        <a href="javascript:void(0)">
+        <Link :href="route('profile.index', post.user)">
             <img :src="post.user.avatar_path || '/img/default_avatar.webp' "
                  alt="avatar" class="w-[50px] rounded-full border border-2 transition-all hover:border-blue-400 object-cover aspect-square">
-        </a>
+        </Link>
         <div class="flex flex-col">
 
             <h4 class="text-lg font-semibold">
-                <a href="javascript:void(0)" class="hover:underline">{{ post.user.name }}</a>
-                <a v-if="post.group" href="javascript:void(0)"> > <span
-                    class="hover:underline">{{ post.group.name }}</span></a>
+                <Link :href="route('profile.index', post.user)" class="hover:underline">{{ post.user.name }}</Link>
+                <Link :href="route('groups.show', post.group)" v-if="post.group"> > <span
+                    class="hover:underline">{{ post.group.name }}</span></Link>
             </h4>
 
             <small v-show="showTime" class="text-sm text-gray-400">{{ post.updated_at }}</small>

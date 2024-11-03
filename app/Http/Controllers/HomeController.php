@@ -12,6 +12,14 @@ class HomeController extends Controller
 {
     public function index(Request $request)
     {
+        /*$postComments = [];
+
+        $comments = Post::query()->find(36)->comments;
+        $comments->each(function ($comment) use (&$postComments) {
+            $postComments[$comment->parent_id ?? 0][] = $comment;
+        });
+        dd($postComments);*/
+
         $posts = Post::query()
             ->withCount(['reactions', 'comments'])
             ->with([

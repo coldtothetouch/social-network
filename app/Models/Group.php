@@ -4,8 +4,11 @@ namespace App\Models;
 
 use App\Enums\GroupUserRole;
 use App\Enums\GroupUserStatus;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Sluggable\HasSlug;
@@ -15,6 +18,7 @@ class Group extends Model
 {
     use SoftDeletes;
     use HasSlug;
+    use HasFactory;
 
     protected $fillable = [
         'name',
@@ -58,6 +62,16 @@ class Group extends Model
         return $this->user_id === $userId;
     }
 
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function owner(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function admins(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'group_users')
@@ -76,5 +90,14 @@ class Group extends Model
         return $this->belongsToMany(User::class, 'group_users')
             ->wherePivot('status', GroupUserStatus::APPROVED->value)
             ->orderBy('name');
+    }
+
+    public function hasApprovedUser($userId): bool
+    {
+        return GroupUser::query()
+            ->where('group_id', $this->id)
+            ->where('user_id', $userId)
+            ->where('status', GroupUserStatus::APPROVED->value)
+            ->exists();
     }
 }

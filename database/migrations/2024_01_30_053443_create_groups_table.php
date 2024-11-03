@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('cover_path', 1024)->nullable();
             $table->string('avatar_path', 1024)->nullable();
 
-            $table->boolean('private', 1024)->default(false);
+            $table->boolean('private')->default(false);
 
             $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(User::class, 'deleted_by')->nullable()->constrained('users');
@@ -32,9 +32,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('groups');
