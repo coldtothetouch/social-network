@@ -151,6 +151,20 @@ function updateGroup() {
         preserveScroll: true,
     })
 }
+
+function kickUser(user) {
+    if (!window.confirm(`Are you sure you want to kick user ${user.name}`)) {
+        return false
+    }
+
+    const form = useForm({
+        user_id: user.id,
+    })
+
+    form.delete(route('groups.users.kick', props.group), {
+        preserveScroll: true
+    })
+}
 </script>
 
 <template>
@@ -294,7 +308,8 @@ function updateGroup() {
                                     :disable-user-role-dropdown="group.user_id === user.id"
                                     :show-user-role-dropdown="currentUserIsAdmin"
                                     @role-change="changeRole"
-                                    class="bg-white shadow-md hover:border-2 hover:border-indigo-500 hover:bg-white"
+                                    @user-kick="kickUser"
+                                    class="bg-white shadow-md"
                                     v-for="user in group.users" :user="user" :key="user.id"/>
                             </div>
                         </TabPanel>

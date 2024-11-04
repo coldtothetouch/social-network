@@ -18,6 +18,7 @@ use App\Notifications\InvitationInGroup;
 use App\Notifications\NewGroupRequest;
 use App\Notifications\RequestApproved;
 use App\Notifications\RoleChanged;
+use App\Notifications\UserKickedFromGroup;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -277,6 +278,33 @@ class GroupController extends Controller
         if ($groupUser) {
             $groupUser->update(['role' => $data['role']]);
             $groupUser->user->notify(new RoleChanged($group, $data['role']));
+        }
+
+        return back();
+    }
+
+    public function kickUser(Group $group, Request $request)
+    {
+        if (!$group->authUserIsAdmin()) {
+            return response('Forbidden', 403);
+        }
+
+        $data = $request->validate([
+            'user_id' => 'required',
+        ]);
+
+        if ($group->isOwner($data['user_id'])) {
+            return response('The owner of the group can not be removed', 403);
+        }
+
+        $groupUser = GroupUser::query()
+            ->where('group_id', $group->id)
+            ->where('user_id', $request->user_id)
+            ->first();
+
+        if ($groupUser) {
+            $groupUser->user->notify(new UserKickedFromGroup($group));
+            $groupUser->delete();
         }
 
         return back();

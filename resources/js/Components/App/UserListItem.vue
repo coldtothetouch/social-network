@@ -20,7 +20,7 @@ defineProps({
         default: false,
     }
 })
-const emit = defineEmits(['approve', 'reject', 'roleChange'])
+const emit = defineEmits(['approve', 'reject', 'roleChange', 'userKick'])
 </script>
 
 <template>
@@ -42,6 +42,9 @@ const emit = defineEmits(['approve', 'reject', 'roleChange'])
                     <option :selected="user.role === 'admin'">admin</option>
                     <option :selected="user.role === 'subscriber'">subscriber</option>
                 </select>
+                <button @click="$emit('userKick', user)" :disabled="disableUserRoleDropdown" class="text-white cursor-pointer ml-3 text-xs py-1.5 px-2 rounded bg-red-500 hover:bg-red-600 disabled:bg-red-300">
+                    Kick
+                </button>
             </div>
         </div>
     </div>
