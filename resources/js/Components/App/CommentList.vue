@@ -65,19 +65,23 @@ function deleteComment(comment) {
             const commentIndex = props.data.comments.findIndex(c => c.id === comment.id)
             props.data.comments.splice(commentIndex, 1)
 
+            const childCommentsCount = comment.comments.length
+
             if (props.parentComment) {
-                props.parentComment.comments_count--
+                props.parentComment.comments_count -= childCommentsCount + 1
             }
 
-            props.post.comments_count--
+            props.post.comments_count -= childCommentsCount + 1
             emit('commentDelete', comment)
         })
 }
 
 
 function onCommentDelete(comment) {
+    const childCommentsCount = comment.comments.length
+
     if (props.parentComment) {
-        props.parentComment.comments_count--
+        props.parentComment.comments_count -= childCommentsCount + 1
     }
 
     emit('commentDelete', comment)
@@ -200,7 +204,7 @@ function sendCommentReaction(comment) {
                         </DisclosurePanel>
                     </Disclosure>
                 </div>
-                <EditDeleteDropdown class="self-start" :user="comment.user" @edit="startCommentEdit(comment)"
+                <EditDeleteDropdown class="self-start" :post="post" :comment="comment" @edit="startCommentEdit(comment)"
                                     @delete="deleteComment(comment)"/>
             </div>
         </div>

@@ -28,6 +28,11 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function isOwnedByAuthUser(): bool
+    {
+        return $this->user->id === auth()->id();
+    }
+
     public function group(): BelongsTo
     {
         return $this->belongsTo(Group::class);

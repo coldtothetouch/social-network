@@ -113,11 +113,11 @@ class PostController extends Controller
 
     public function destroy(Post $post): Response|RedirectResponse
     {
-        if ($post->user_id !== auth()->id()) {
-            return response("You don't have permission to delete this post", 403);
+        if ($post->isOwnedByAuthUser() || $post->group?->authUserIsAdmin()) {
+            $post->delete();
+            return back();
         }
 
-        $post->delete();
-        return back();
+        return response("You don't have permission to delete this post", 403);
     }
 }

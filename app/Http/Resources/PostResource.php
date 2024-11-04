@@ -19,7 +19,7 @@ class PostResource extends JsonResource
             'created_at' => (new Carbon($this->created_at))->diffForHumans(),
             'updated_at' => (new Carbon($this->updated_at))->diffForHumans(),
             'user' => UserResource::make($this->user),
-            'group' => $this->group,
+            'group' => GroupResource::make($this->group),
             'attachments' => PostAttachmentResource::collection($this->attachments),
             'reactions_count' => $this->reactions_count,
             'comments_count' => count($comments),

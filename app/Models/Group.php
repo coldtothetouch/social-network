@@ -52,7 +52,7 @@ class Group extends Model
         return $this->hasOne(GroupUser::class)->where('user_id', auth()->id());
     }
 
-    public function isAdmin(): bool
+    public function authUserIsAdmin(): bool
     {
         return $this->authGroupUser->role === GroupUserRole::ADMIN->value;
     }

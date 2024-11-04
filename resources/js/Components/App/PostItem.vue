@@ -45,7 +45,7 @@ function sendReaction() {
     <div class="border p-5 rounded-lg bg-white shadow">
         <div class="flex justify-between  items-center mb-3">
             <PostUserHeader :post="post"/>
-            <EditDeleteDropdown :user="post.user" @edit="openEditModal" @delete="deletePost()"></EditDeleteDropdown>
+            <EditDeleteDropdown :post="post" @edit="openEditModal" @delete="deletePost()"/>
         </div>
         <div class="overflow-hidden" v-if="post.body">
             <ReadMoreOrHide :content="post.body"/>

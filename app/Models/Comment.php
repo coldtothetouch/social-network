@@ -30,6 +30,11 @@ class Comment extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function post(): BelongsTo
+    {
+        return $this->belongsTo(Post::class);
+    }
+
     public function reactions(): MorphMany
     {
         return $this->morphMany(Reaction::class, 'reactionable');
@@ -43,5 +48,10 @@ class Comment extends Model
     public function comments(): HasMany
     {
         return $this->hasMany(Comment::class, 'parent_id');
+    }
+
+    public function isOwnedByAuthUser(): bool
+    {
+        return $this->user_id === auth()->id();
     }
 }

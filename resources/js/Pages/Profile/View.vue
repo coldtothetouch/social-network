@@ -231,7 +231,3 @@ function resetAvatarImage() {
         </div>
     </AuthenticatedLayout>
 </template>
-
-<style scoped>
-
-</style>

@@ -18,7 +18,7 @@ class InviteUserRequest extends FormRequest
     public function authorize(): bool
     {
         $this->group = $this->route('group');
-        return $this->group->isAdmin();
+        return $this->group->authUserIsAdmin();
     }
 
     public function rules(): array
@@ -30,7 +30,7 @@ class InviteUserRequest extends FormRequest
                     ->first();
 
                 if (!$this->user) {
-                    return $fail('User does not exist');
+                    $fail('User does not exist');
                 }
 
                 $this->groupUser = GroupUser::query()
@@ -39,7 +39,7 @@ class InviteUserRequest extends FormRequest
                     ->first();
 
                 if ($this->groupUser && $this->groupUser->status === GroupUserStatus::APPROVED->value) {
-                    return $fail('User is already in group');
+                    $fail('User is already in group');
                 }
             }]
         ];

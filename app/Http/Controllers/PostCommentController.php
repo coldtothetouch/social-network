@@ -8,6 +8,7 @@ use App\Models\Comment;
 use App\Models\Post;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -40,14 +41,13 @@ class PostCommentController extends Controller
         return CommentResource::make($comment);
     }
 
-    public function destroy(Comment $comment): Response|Application|ResponseFactory
+    public function destroy(Comment $comment): Response|RedirectResponse
     {
-        if ($comment->user_id !== Auth::id()) {
-            return response("You don't have permission to delete this comment", 403);
+        if ($comment->isOwnedByAuthUser() || $comment->post->group?->authUserIsAdmin()) {
+            $comment->delete();
+            return back();
         }
 
-        $comment->delete();
-
-        return response('', 204);
+        return response("You don't have permission to delete this comment", 403);
     }
 }

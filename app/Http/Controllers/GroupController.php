@@ -219,7 +219,7 @@ class GroupController extends Controller
 
     public function approveUser(Group $group, Request $request)
     {
-        if (!$group->isAdmin()) {
+        if (!$group->authUserIsAdmin()) {
             return response('Forbidden', 403);
         }
 
@@ -256,7 +256,7 @@ class GroupController extends Controller
 
     public function changeRole(Group $group, Request $request)
     {
-        if (!$group->isAdmin()) {
+        if (!$group->authUserIsAdmin()) {
             return response('Forbidden', 403);
         }
 

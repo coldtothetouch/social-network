@@ -15,7 +15,7 @@ class UpdateGroupRequest extends FormRequest
         /** @var Group $group */
         $group = $this->route('group');
 
-        return $group->isAdmin();
+        return $group->authUserIsAdmin();
     }
 
     /**
