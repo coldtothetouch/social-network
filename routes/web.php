@@ -73,6 +73,7 @@ Route::group([
     Route::post('{group}/approve-user', 'approveUser')->name('users.approve');
     Route::delete('{group}/kick-user', 'kickUser')->name('users.kick');
     Route::post('{group}/change-role', 'changeRole')->name('role.change');
+    Route::delete('{group}/leave', 'leaveGroup')->name('leave');
 });
 
 require __DIR__ . '/auth.php';

@@ -310,6 +310,23 @@ class GroupController extends Controller
         return back();
     }
 
+    public function leaveGroup(Group $group, Request $request)
+    {
+        $data = $request->validate([
+            'user_id' => 'required',
+        ]);
+
+        $groupUser = GroupUser::query()
+            ->where('group_id', $group->id)
+            ->where('user_id', $data['user_id'])
+            ->where('status', GroupUserStatus::APPROVED->value)
+            ->first();
+
+        if ($groupUser) {
+            $groupUser->delete();
+        }
+    }
+
     public function update(UpdateGroupRequest $request, Group $group)
     {
         $group->update($request->validated());

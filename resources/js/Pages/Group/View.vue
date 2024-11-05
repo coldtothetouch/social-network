@@ -165,6 +165,14 @@ function kickUser(user) {
         preserveScroll: true
     })
 }
+
+function leaveGroup() {
+    const form = useForm({
+        user_id: user.id
+    })
+
+    form.delete(route('groups.leave', props.group))
+}
 </script>
 
 <template>
@@ -268,6 +276,7 @@ function kickUser(user) {
                             </PrimaryButton>
 
                             <DangerButton
+                                @click="leaveGroup"
                                 v-if="group.role && group.role !== 'admin' && group.status !== 'pending' && group.status !== 'rejected'">
                                 Leave group
                             </DangerButton>
@@ -332,8 +341,11 @@ function kickUser(user) {
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>
-                            <GroupForm :form="aboutForm"/>
-                            <PrimaryButton @click="updateGroup">Submit</PrimaryButton>
+                            <template v-if="currentUserIsAdmin">
+                                <GroupForm  :form="aboutForm"/>
+                                <PrimaryButton @click="updateGroup">Submit</PrimaryButton>
+                            </template>
+                            <div v-html="group.description" v-else/>
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>
