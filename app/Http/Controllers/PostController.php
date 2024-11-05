@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\PostAttachment;
+use App\Notifications\NewPost;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -44,6 +47,15 @@ class PostController extends Controller
                 ]);
             }
 
+            $group = $post->group;
+
+            if ($group) {
+                Notification::send(
+                    $group->approvedUsers()->where('user_id', '!=', auth()->id())->get(),
+                    new NewPost($post, $group)
+                );
+            }
+
             Db::commit();
         } catch (Throwable) {
             Storage::disk('public')->delete($allFilePaths);
@@ -51,6 +63,11 @@ class PostController extends Controller
         }
 
         return back();
+    }
+
+    public function show(Post $post): Response
+    {
+        return PostResource::make($post);
     }
 
     public function update(Post $post, UpdatePostRequest $request)

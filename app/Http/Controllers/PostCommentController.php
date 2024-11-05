@@ -6,6 +6,7 @@ use App\Http\Requests\UpdateCommentRequest;
 use App\Http\Resources\CommentResource;
 use App\Models\Comment;
 use App\Models\Post;
+use App\Notifications\NewComment;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +29,10 @@ class PostCommentController extends Controller
             'body' => nl2br($data['comment']),
             'parent_id' => $data['parent_id'] ?? null,
         ]);
+
+        if (!$post->isOwnedByAuthUser()) {
+            $post->user->notify(new NewComment($post, $comment));
+        }
 
         return CommentResource::make($comment, 201);
     }

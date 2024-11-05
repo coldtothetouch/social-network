@@ -13,6 +13,8 @@ use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\Post;
 use App\Models\Reaction;
+use App\Notifications\NewReactionOnComment;
+use App\Notifications\NewReactionOnPost;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -43,6 +45,10 @@ class ReactionController extends Controller
                 'user_id' => auth()->id(),
                 'type' => $data['reaction']
             ]);
+
+            if (!$comment->isOwnedByAuthUser()) {
+                $comment->user->notify(new NewReactionOnComment(auth()->user(), $comment));
+            }
         }
 
         $reactionCount = Reaction::query()
@@ -80,6 +86,10 @@ class ReactionController extends Controller
                 'user_id' => auth()->id(),
                 'type' => $data['reaction']
             ]);
+
+            if (!$post->isOwnedByAuthUser()) {
+                $post->user->notify(new NewReactionOnPost(auth()->user(), $post));
+            }
         }
 
         $reactionCount = Reaction::query()

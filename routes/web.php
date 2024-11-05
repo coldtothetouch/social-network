@@ -28,6 +28,7 @@ Route::group([
     'prefix' => 'posts'
 ], function () {
     Route::post('', 'store')->name('store');
+    Route::post('{post}/show', 'show')->name('show');
     Route::put('{post}', 'update')->name('update');
     Route::delete('{post}', 'destroy')->name('destroy');
 
