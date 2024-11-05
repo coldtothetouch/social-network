@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
@@ -65,9 +66,20 @@ class PostController extends Controller
         return back();
     }
 
-    public function show(Post $post): Response
+    public function show(Post $post): \Inertia\Response
     {
-        return PostResource::make($post);
+        $post->loadCount(['reactions']);
+
+        $post->load([
+            'comments' => function ($query) {
+                $query->withCount('likes');
+            }
+        ]);
+
+
+        return Inertia::render('Post/Show', [
+            'post' => PostResource::make($post),
+        ]);
     }
 
     public function update(Post $post, UpdatePostRequest $request)
@@ -77,7 +89,6 @@ class PostController extends Controller
 
         DB::beginTransaction();
         try {
-
             $post->update($data);
 
             $deletedFileIds = $data['deleted_file_ids'] ?? [];

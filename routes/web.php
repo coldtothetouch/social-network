@@ -28,7 +28,7 @@ Route::group([
     'prefix' => 'posts'
 ], function () {
     Route::post('', 'store')->name('store');
-    Route::post('{post}/show', 'show')->name('show');
+    Route::get('{post}', 'show')->name('show');
     Route::put('{post}', 'update')->name('update');
     Route::delete('{post}', 'destroy')->name('destroy');
 
@@ -52,8 +52,8 @@ Route::group([
     'as' => 'reactions.',
     'prefix' => 'reactions'
 ], function () {
-    Route::post('{post}', 'postReaction')->name('posts.store');
-    Route::post('{comment}', 'commentReaction')->name('comments.store');
+    Route::post('posts/{post}', 'postReaction')->name('posts.store');
+    Route::post('comments/{comment}', 'commentReaction')->name('comments.store');
 });
 
 Route::group([
