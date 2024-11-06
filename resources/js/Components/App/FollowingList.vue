@@ -4,6 +4,10 @@ import {ref} from "vue";
 import {Disclosure, DisclosureButton, DisclosurePanel} from "@headlessui/vue";
 import FollowingListItems from "@/Components/App/FollowingListItems.vue";
 
+defineProps({
+    followings: Array,
+})
+
 const search = ref('');
 </script>
 
@@ -20,14 +24,14 @@ const search = ref('');
                 </DisclosureButton>
 
                 <DisclosurePanel class="h-full flex flex-col">
-                    <FollowingListItems/>
+                    <FollowingListItems :followings="followings"/>
                 </DisclosurePanel>
             </Disclosure>
         </div>
         <div class="hidden lg:flex flex-col flex-1 h-full">
 
             <h2 class="text-2xl font-bold">My Followings</h2>
-            <FollowingListItems/>
+            <FollowingListItems :followings="followings"/>
         </div>
     </div>
 </template>

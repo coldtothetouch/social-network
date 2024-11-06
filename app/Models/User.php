@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\GroupUserStatus;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\HasSlug;
@@ -39,7 +40,8 @@ class User extends Authenticatable
 
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'group_users');
+        return $this->belongsToMany(Group::class, 'group_users')
+            ->where('status', GroupUserStatus::APPROVED->value);
     }
 
     public function followers(): BelongsToMany

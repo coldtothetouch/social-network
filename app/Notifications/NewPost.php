@@ -15,7 +15,7 @@ class NewPost extends Notification
 
     public function __construct(
         public Post $post,
-        public Group $group,
+        public ?Group $group = null,
     )
     {
     }
@@ -28,7 +28,8 @@ class NewPost extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line("New post was added in {$this->group->name}.")
+                    ->lineIf(!!$this->group,"New post was added in {$this->group?->name}.")
+                    ->lineIf(!$this->group,"New post was added by user {$this->post->user->name}.")
                     ->action('View Post', url(route('posts.show', $this->post)))
                     ->line('Thank you for using our application!');
     }

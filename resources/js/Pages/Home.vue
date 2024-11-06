@@ -9,6 +9,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 defineProps({
     posts: Object,
     groups: Array,
+    followings: Array,
 })
 
 </script>
@@ -21,7 +22,7 @@ defineProps({
             </div>
 
             <div class="lg:col-span-3 py-3 px-3 lg:order-3 overflow-hidden flex flex-col">
-                <FollowingList/>
+                <FollowingList :followings="followings"/>
             </div>
 
             <div class="lg:col-span-6 py-3 px-3 h-full flex-1 lg:order-2 overflow-y-auto flex flex-col">

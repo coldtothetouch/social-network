@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Enums\ReactionEnum;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -56,5 +57,16 @@ class Post extends Model
     public function likes(): MorphMany
     {
         return $this->reactions()->where('type', ReactionEnum::LIKE);
+    }
+
+    public function scopeFeed(Builder $query): void
+    {
+        $followedGroupIds = auth()->user()->groups->pluck('id');
+        $followedUserIds = auth()->user()->followings->pluck('id');
+
+        $query->whereIn('group_id', $followedGroupIds)
+            ->orWhere(function ($query) use ($followedUserIds) {
+                $query->whereNull('group_id')->whereIn('user_id', $followedUserIds);
+            });
     }
 }

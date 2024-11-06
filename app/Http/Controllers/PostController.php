@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\PostAttachment;
+use App\Models\User;
 use App\Notifications\NewPost;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
@@ -54,6 +55,11 @@ class PostController extends Controller
                 Notification::send(
                     $group->approvedUsers()->where('user_id', '!=', auth()->id())->get(),
                     new NewPost($post, $group)
+                );
+            } else {
+                Notification::send(
+                    User::query()->find($data['user_id'])->followers,
+                    new NewPost($post)
                 );
             }
 

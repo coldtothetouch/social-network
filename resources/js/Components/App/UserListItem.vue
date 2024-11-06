@@ -24,7 +24,7 @@ const emit = defineEmits(['approve', 'reject', 'roleChange', 'userKick'])
 </script>
 
 <template>
-    <div class="flex gap-3 items-center py-3 px-5 hover:bg-gray-200 rounded-md">
+    <div class="flex gap-3 items-center py-3 px-5 hover:bg-gray-200 rounded-md border">
         <Link :href="route('profile.index', user)">
             <img :src="user.avatar_path" class="size-[45px] rounded-full" alt="avatar">
         </Link>

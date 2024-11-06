@@ -28,6 +28,7 @@ class ProfileController extends Controller
             ->with('user')
             ->where('user_id', $user->id)
             ->where('group_id', null)
+            ->latest()
             ->paginate(10);
 
         if ($request->wantsJson()) {

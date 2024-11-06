@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\PostResource;
+use App\Http\Resources\UserResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -23,7 +24,7 @@ class HomeController extends Controller
         $posts = Post::query()
             ->withCount(['reactions', 'comments'])
             ->with([
-                'user', 'group', 'attachments',
+                'attachments', 'group', 'user',
                 'reactions' => function ($query) {
                     $query->where('user_id', auth()->id());
                 },
@@ -31,18 +32,23 @@ class HomeController extends Controller
                     $query->withCount('likes');
                 }
             ])
+            ->feed()
             ->latest('updated_at')
             ->paginate(20);
+
+       // dd($posts->toRawSql());
 
         if ($request->wantsJson()) {
             return PostResource::collection($posts);
         }
 
-        $groups = auth()->user()->groups()->with('authGroupUser')->orderBy('role')->get();
+        $groups = auth()->user()->groups()->orderBy('role')->get();
+        $followings = auth()->user()->followings;
 
         return Inertia::render('Home', [
             'posts' => PostResource::collection($posts),
             'groups' => GroupResource::collection($groups),
+            'followings' => UserResource::collection($followings),
         ]);
     }
 }
