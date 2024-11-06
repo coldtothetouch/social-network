@@ -52,7 +52,10 @@ function sendReaction() {
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-2 sm:grid-cols-1 gap-3">
-            <PostAttachments :attachments="post.attachments" @attachmentClick="openAttachment"/>
+            <PostAttachments v-if="post.attachments"
+                             :attachments="post.attachments"
+                             @attachmentClick="openAttachment"
+            />
         </div>
 
         <Disclosure v-slot="{ open }">

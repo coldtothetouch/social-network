@@ -13,7 +13,7 @@ defineProps({
         <div class="flex gap-3 justify-between items-center w-full">
             <div>
                 <h3 class="text-md font-semibold">{{ group.name }}</h3>
-                <div class="text-sm text-gray-500">{{ group.short_description }}</div>
+                <div class="text-sm text-gray-500" v-html="group.short_description"/>
             </div>
             <div class="text-sm">{{ group.status === 'approved' ? (group.role === 'admin' ? 'admin' : '' ) : 'not approved' }}</div>
         </div>

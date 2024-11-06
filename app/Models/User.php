@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
 use Laravel\Sanctum\HasApiTokens;
@@ -49,6 +50,21 @@ class User extends Authenticatable
             'user_id',
             'follower_id',
         );
+    }
+
+    public function followings(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            User::class,
+            'followers',
+            'follower_id',
+            'user_id',
+        );
+    }
+
+    public function posts(): HasMany
+    {
+        return $this->hasMany(Post::class)->where('group_id', null);
     }
 
 

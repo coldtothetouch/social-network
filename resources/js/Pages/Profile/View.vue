@@ -9,11 +9,20 @@ import {computed, ref} from "vue";
 import {CheckIcon} from "@heroicons/vue/24/outline"
 import {XMarkIcon, CameraIcon} from "@heroicons/vue/24/solid"
 import DangerButton from "@/Components/DangerButton.vue";
+import CreatePost from "@/Components/App/CreatePost.vue";
+import PostList from "@/Components/App/PostList.vue";
+import UserListItem from "@/Components/App/UserListItem.vue";
+import TextInput from "@/Components/TextInput.vue";
 
 const authUser = usePage().props.auth.user
+
 const coverImageSrc = ref('')
 const avatarImageSrc = ref('')
+
 const showFlash = ref(true)
+
+const searchFollower = ref('')
+const searchFollowing = ref('')
 
 const props = defineProps({
     errors: Object,
@@ -25,7 +34,10 @@ const props = defineProps({
     },
     user: {
         type: Object,
-    }
+    },
+    posts: Object,
+    followers: Array,
+    followings: Array,
 });
 
 const ImagesForm = useForm({
@@ -213,17 +225,35 @@ function followUser() {
                     </TabList>
 
                     <TabPanels class="mt-2">
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            Posts
+                        <TabPanel>
+                            <CreatePost v-if="isMyProfile"/>
+                            <PostList :posts="posts.data"/>
                         </TabPanel>
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            Followers
+                        <TabPanel>
+                            <div v-if="followers.length">
+                                <TextInput :model-value="searchFollower" placeholder="Type to search"
+                                           class="w-full my-2"/>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <UserListItem class="bg-white shadow-md" v-for="user in followers"
+                                                  :user="user"/>
+                                </div>
+                            </div>
+                            <div v-else class="text-2xl text-center pt-10">
+                                This user has no followers
+                            </div>
                         </TabPanel>
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            Followings
+                        <TabPanel>
+                            <div v-if="followings.length">
+                                <TextInput :model-value="searchFollowing" placeholder="Type to search"
+                                           class="w-full my-2"/>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <UserListItem class="bg-white shadow-md" v-for="user in followings"
+                                                  :user="user"/>
+                                </div>
+                            </div>
+                            <div v-else class="text-2xl text-center pt-10">
+                                This user is not following anybody
+                            </div>
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>

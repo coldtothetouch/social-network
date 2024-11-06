@@ -73,11 +73,15 @@ onMounted(() => {
 <template>
     <div class="flex flex-col gap-3 h-full overflow-y-auto">
         <PostItem
+            v-if="allPosts.data.length"
             v-for="post of allPosts.data" :key="post.id"
             :post="post"
             @editClick="openEditModal"
             @attachmentClick="openPreviewModal"
         />
+        <div v-else class="text-2xl text-center mt-10">
+            There is no posts
+        </div>
         <div ref="loadMoreIntersect"></div>
     </div>
 

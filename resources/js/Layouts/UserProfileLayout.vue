@@ -1,34 +1,31 @@
 <script setup>
 import {useForm, usePage} from "@inertiajs/vue3";
-import {Tab, TabGroup, TabList, TabPanel, TabPanels} from '@headlessui/vue'
+import {TabGroup, TabList, Tab, TabPanels, TabPanel} from '@headlessui/vue'
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TabItem from "@/Pages/Profile/Partials/TabItem.vue";
+import Edit from "@/Pages/Profile/Edit.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {computed, ref} from "vue";
 import {CheckIcon} from "@heroicons/vue/24/outline"
-import {CameraIcon, XMarkIcon} from "@heroicons/vue/24/solid"
+import {XMarkIcon, CameraIcon} from "@heroicons/vue/24/solid"
 import DangerButton from "@/Components/DangerButton.vue";
-import InviteUserModal from "@/Components/App/InviteUserModal.vue";
-import UserListItem from "@/Components/App/UserListItem.vue";
-import TextInput from "@/Components/TextInput.vue";
-import GroupForm from "@/Components/App/GroupForm.vue";
-import PostList from "@/Components/App/PostList.vue";
-import CreatePost from "@/Components/App/CreatePost.vue";
 
-const user = usePage().props.auth.user
+const authUser = usePage().props.auth.user
 const coverImageSrc = ref('')
 const avatarImageSrc = ref('')
 const showFlash = ref(true)
 
 const props = defineProps({
-    group: {
-        type: Object,
+    errors: Object,
+    mustVerifyEmail: {
+        type: Boolean,
     },
-    posts: Object,
     status: {
         type: String,
     },
-    errors: Object
+    user: {
+        type: Object,
+    }
 });
 
 const ImagesForm = useForm({
@@ -36,18 +33,9 @@ const ImagesForm = useForm({
     avatar: null,
 });
 
-const currentUserIsAdmin = computed(() => props.group.role === 'admin')
-const isJoinedGroup = computed(() => !!props.group.role && props.group.status === 'approved')
+//const isCurrentUserFollower = computed(() => )
 
-const search = ref('')
-
-const showInviteUseModal = ref(false)
-
-const aboutForm = useForm({
-    name: props.group.name,
-    private: !!props.group.private,
-    description: props.group.description,
-})
+const isMyProfile = computed(() => authUser && authUser.id === props.user.id)
 
 function onCoverChange(event) {
     ImagesForm.cover = event.target.files[0]
@@ -67,15 +55,14 @@ function resetCoverImage() {
 }
 
 function updateCoverImage() {
-    ImagesForm.post(route('groups.updateImage', props.group.slug), {
+    ImagesForm.post(route('profile.updateImage'), {
         onSuccess: () => {
             setTimeout(() => {
                 showFlash.value = false
             }, 3000)
             resetCoverImage()
             showFlash.value = true
-        },
-        preserveScroll: true
+        }
     })
 }
 
@@ -92,15 +79,14 @@ function onAvatarChange(event) {
 }
 
 function updateAvatarImage() {
-    ImagesForm.post(route('groups.updateImage', props.group.slug), {
+    ImagesForm.post(route('profile.updateImage'), {
         onSuccess: () => {
             setTimeout(() => {
                 showFlash.value = false
             }, 3000)
             resetAvatarImage()
             showFlash.value = true
-        },
-        preserveScroll: true
+        }
     })
 }
 
@@ -109,74 +95,17 @@ function resetAvatarImage() {
     ImagesForm.avatar = null
 }
 
-function joinToGroup() {
+function followUser() {
     const form = useForm({})
-    form.post(route('groups.join', props.group.slug), {
-        preserveScroll: true
-    })
-}
 
-function approveUser(user) {
-    const form = useForm({
-        user_id: user.id,
-        action: 'approve'
-    })
-    form.post(route('groups.users.approve', props.group), {
-        preserveScroll: true
-    })
-}
-
-function rejectUser(user) {
-    const form = useForm({
-        user_id: user.id,
-        action: 'reject'
-    })
-    form.post(route('groups.users.approve', props.group), {
-        preserveScroll: true
-    })
-}
-
-function changeRole(user, role) {
-    const form = useForm({
-        user_id: user.id,
-        role: role,
-    })
-    form.post(route('groups.role.change', props.group), {
-        preserveScroll: true
-    })
-}
-
-function updateGroup() {
-    aboutForm.patch(route('groups.update', props.group), {
+    form.post(route('profile.follow', props.user), {
         preserveScroll: true,
     })
 }
 
-function kickUser(user) {
-    if (!window.confirm(`Are you sure you want to kick user ${user.name}`)) {
-        return false
-    }
-
-    const form = useForm({
-        user_id: user.id,
-    })
-
-    form.delete(route('groups.users.kick', props.group), {
-        preserveScroll: true
-    })
-}
-
-function leaveGroup() {
-    const form = useForm({
-        user_id: user.id
-    })
-
-    form.delete(route('groups.leave', props.group))
-}
 </script>
 
 <template>
-    <InviteUserModal v-model="showInviteUseModal"/>
     <AuthenticatedLayout>
         <div class="max-w-[1300px] mx-auto h-full overflow-y-auto">
             <div
@@ -193,9 +122,9 @@ function leaveGroup() {
             </div>
             <div class="relative group">
 
-                <img alt="cover" :src="coverImageSrc || group.cover_path"
+                <img alt="cover" :src="coverImageSrc || user.cover_path || '/img/default_cover.jpg' "
                      class="w-full object-cover h-[300px]">
-                <div class="absolute top-3 right-3" v-show="currentUserIsAdmin">
+                <div class="absolute top-3 right-3">
                     <button v-if="!coverImageSrc"
                             class="bg-gray-50 hover:bg-gray-100 text-gray-800 py-2 px-3 opacity-0 group-hover:opacity-100 text-xs transition-all flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -224,10 +153,9 @@ function leaveGroup() {
                 <div class="flex bg-white">
                     <div
                         class="flex items-center justify-center relative group/avatar -mt-[64px] ml-[48px] w-[128px] h-[128px] rounded-full">
-                        <img alt="avatar" :src="avatarImageSrc  || group.avatar_path"
+                        <img alt="avatar" :src="avatarImageSrc  || user.avatar_path || '/img/default_avatar.webp'"
                              class="w-full h-full object-cover rounded-full">
                         <button
-                            v-show="currentUserIsAdmin"
                             v-if="!avatarImageSrc"
                             class="absolute left-0 top-0 right-0 bottom-0 bg-black/50 text-gray-200 rounded-full opacity-0 flex items-center justify-center group-hover/avatar:opacity-100">
                             <CameraIcon class="w-8 h-8"/>
@@ -235,7 +163,7 @@ function leaveGroup() {
                             <input type="file" class="absolute left-0 top-0 bottom-0 right-0 opacity-0"
                                    @change="onAvatarChange"/>
                         </button>
-                        <div v-show="currentUserIsAdmin" v-else class="absolute top-1 right-0 flex flex-col gap-2">
+                        <div v-else class="absolute top-1 right-0 flex flex-col gap-2">
                             <button
                                 @click="resetAvatarImage"
                                 class="w-7 h-7 flex items-center justify-center bg-red-500/80 text-white rounded-full">
@@ -250,102 +178,61 @@ function leaveGroup() {
                     </div>
                     <div class="flex justify-between items-center flex-1 p-4">
                         <div>
-                            <h2 class="font-bold text-lg">{{ group.name }}</h2>
-                            <p class="text-xs text-gray-500">{{ props.group.follower_count || 0 }} follower(s)</p>
+                            <h2 class="font-bold text-lg">{{ user.name }}</h2>
+                            <p class="text-xs text-gray-500">{{ user.followers_count }} follower(s)</p>
                         </div>
-
-                        <div class="flex gap-2">
-                            <PrimaryButton v-if="group.private && !group.role" @click="joinToGroup">
-                                Request to join
+                        <div v-if="!isMyProfile">
+                            <PrimaryButton v-if="!user.is_followed_by_auth_user" @click="followUser">
+                                Follow User
                             </PrimaryButton>
-                            <PrimaryButton v-if="group.private && group.status === 'pending'"
-                                           class="!bg-gray-400 cursor-not-allowed">
-                                Request sent
-                            </PrimaryButton>
-                            <PrimaryButton v-if="!group.private && !group.role" @click="joinToGroup">
-                                Join to group
-                            </PrimaryButton>
-
-                            <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">
-                                Invite users
-                            </PrimaryButton>
-
-                            <PrimaryButton v-if="group.private && group.status === 'rejected'"
-                                           class="cursor-default !bg-gray-400 hover:bg-gray-400">
-                                Request Rejected
-                            </PrimaryButton>
-
-                            <DangerButton
-                                @click="leaveGroup"
-                                v-if="group.role && group.role !== 'admin' && group.status !== 'pending' && group.status !== 'rejected'">
-                                Leave group
+                            <DangerButton v-else @click="followUser">
+                                Unfollow User
                             </DangerButton>
                         </div>
                     </div>
                 </div>
             </div>
-            <div>
+            <div class="">
                 <TabGroup>
-                    <TabList class="flex space-x-1 bg-blue-900/20 bg-white">
+                    <TabList class="flex space-x-1 bg-blue-900/20 bg-white ">
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
-                        <Tab v-if="isJoinedGroup" v-slot="{ selected }" as="template">
-                            <TabItem text="Users" :selected="selected"/>
+                        <Tab v-slot="{ selected }" as="template">
+                            <TabItem text="Followers" :selected="selected"/>
                         </Tab>
-                        <Tab v-if="currentUserIsAdmin" v-slot="{ selected }" as="template">
-                            <TabItem text="Requests" :selected="selected"/>
+                        <Tab v-slot="{ selected }" as="template">
+                            <TabItem text="Followings" :selected="selected"/>
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Photos" :selected="selected"/>
                         </Tab>
                         <Tab v-slot="{ selected }" as="template">
-                            <TabItem text="About" :selected="selected"/>
+                            <TabItem text="My Profile" :selected="selected"/>
                         </Tab>
                     </TabList>
 
                     <TabPanels class="mt-2">
-                        <TabPanel>
-                            <CreatePost v-if="group.status === 'approved'" :group="group"/>
-                            <PostList v-if="!group.private || group.status === 'approved'" :posts="posts.data"/>
-                            <div v-else class="text-xl text-center mt-10">You don't have permission to view this content</div>
+                        <TabPanel
+                            class='shadow bg-white p-5'>
+                            Posts
                         </TabPanel>
-                        <TabPanel v-if="isJoinedGroup">
-                            <TextInput :model-value="search" placeholder="Type to search" class="w-full my-2"/>
-                            <div class="grid grid-cols-2 gap-2">
-                                <UserListItem
-                                    :disable-user-role-dropdown="group.user_id === user.id"
-                                    :show-user-role-dropdown="currentUserIsAdmin"
-                                    @role-change="changeRole"
-                                    @user-kick="kickUser"
-                                    class="bg-white shadow-md"
-                                    v-for="user in group.users" :user="user" :key="user.id"/>
-                            </div>
+                        <TabPanel
+                            class='shadow bg-white p-5'>
+                            Followers
                         </TabPanel>
-                        <TabPanel v-if="currentUserIsAdmin">
-                            <div v-if="group.pending_users.length" class="grid grid-cols-2 gap-2">
-                                <UserListItem @reject="rejectUser(user)"
-                                              @approve="approveUser(user)"
-                                              class="bg-white shadow-md hover:border-2 hover:border-indigo-500 hover:bg-white"
-                                              v-for="user in group.pending_users" :user="user" :for-approve="true"
-                                              :key="user.id"/>
-
-                            </div>
-                            <div v-else class="text-center mt-10 text-xl">
-                                No pending users
-                            </div>
+                        <TabPanel
+                            class='shadow bg-white p-5'>
+                            Followings
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>
                             Photos
                         </TabPanel>
                         <TabPanel
-                            class='shadow bg-white p-5'>
-                            <template v-if="currentUserIsAdmin">
-                                <GroupForm :form="aboutForm"/>
-                                <PrimaryButton @click="updateGroup">Submit</PrimaryButton>
-                            </template>
-                            <div class="ck-content-output" v-html="group.description" v-else/>
+                            v-if="isMyProfile"
+                            class='shadow'>
+                            <Edit :mustVerifyEmail="mustVerifyEmail" :status="status"/>
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>

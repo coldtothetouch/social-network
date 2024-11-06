@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
 use App\Models\Follower;
+use App\Models\Post;
 use App\Models\User;
 use App\Notifications\NewFollower;
+use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,11 +22,24 @@ use Inertia\Response;
 
 class ProfileController extends Controller
 {
-    public function index(User $user)
+    public function index(Request $request, User $user)
     {
+        $posts = Post::query()
+            ->with('user')
+            ->where('user_id', $user->id)
+            ->where('group_id', null)
+            ->paginate(10);
+
+        if ($request->wantsJson()) {
+            return PostResource::collection($posts);
+        }
+
         return Inertia::render('Profile/View', [
-            'user' => new UserResource($user),
-            'status' => session('status')
+            'user' => UserResource::make($user),
+            'posts' => PostResource::collection($posts),
+            'followers' => UserResource::collection($user->followers),
+            'followings' => UserResource::collection($user->followings),
+            'status' => session('status'),
         ]);
     }
 
