@@ -33,6 +33,8 @@ const ImagesForm = useForm({
     avatar: null,
 });
 
+//const isCurrentUserFollower = computed(() => )
+
 const isMyProfile = computed(() => authUser && authUser.id === props.user.id)
 
 function onCoverChange(event) {
@@ -91,6 +93,14 @@ function updateAvatarImage() {
 function resetAvatarImage() {
     avatarImageSrc.value = null
     ImagesForm.avatar = null
+}
+
+function followUser() {
+    const form = useForm({})
+
+    form.post(route('profile.follow', props.user), {
+        preserveScroll: true,
+    })
 }
 
 </script>
@@ -171,9 +181,8 @@ function resetAvatarImage() {
                             <h2 class="font-bold text-lg">{{ user.name }}</h2>
                             <p class="text-xs text-gray-500">{{ user.followers_count }} follower(s)</p>
                         </div>
-
                         <div v-if="!isMyProfile">
-                            <PrimaryButton v-if="!isCurrentUserFollower" @click="followUser">
+                            <PrimaryButton v-if="!user.is_followed_by_auth_user" @click="followUser">
                                 Follow User
                             </PrimaryButton>
                             <DangerButton v-else @click="followUser">

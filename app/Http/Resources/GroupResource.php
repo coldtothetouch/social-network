@@ -31,8 +31,8 @@ class GroupResource extends JsonResource
 
             'name' => $this->name,
             'slug' => $this->slug,
-            'description' => $this->description,
-            'short_description' => Str::words($this->description, 10),
+            'description' => strip_tags($this->description),
+            'short_description' => Str::words(strip_tags($this->description), 10),
 
             'cover_path' => $this->cover_path ? Storage::url($this->cover_path) : '/img/default_cover.jpg',
             'avatar_path' => $this->avatar_path ? Storage::url($this->avatar_path) : '/img/default_avatar.webp',

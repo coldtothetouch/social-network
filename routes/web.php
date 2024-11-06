@@ -15,10 +15,11 @@ Route::group([
     'middleware' => 'auth',
     'as' => 'profile.',
 ], function () {
-    Route::get('user/{user}', 'index')->name('index');
+    Route::get('users/{user}', 'index')->name('index');
     Route::patch('profile', 'update')->name('update');
     Route::delete('profile', 'destroy')->name('destroy');
     Route::post('profile/update-image', 'updateImage')->name('updateImage');
+    Route::post('users/{user}/follow', 'followUser')->name('follow');
 });
 
 Route::group([

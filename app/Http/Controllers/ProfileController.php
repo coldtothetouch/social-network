@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Resources\UserResource;
+use App\Models\Follower;
 use App\Models\User;
+use App\Notifications\NewFollower;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -68,6 +70,30 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
+    }
+
+    public function followUser(User $user)
+    {
+        $follower = Follower::query()
+            ->where('follower_id', auth()->id())
+            ->where('user_id', $user->id)
+            ->first();
+
+        $message = 'You followed this user.';
+
+        if ($follower) {
+            $follower->delete();
+            $message = 'You unfollowed this user.';
+        } else {
+            Follower::query()->create([
+                'follower_id' => auth()->id(),
+                'user_id' => $user->id,
+            ]);
+
+            $user->notify(new NewFollower(auth()->user()));
+        }
+
+        return back()->withStatus($message);
     }
 
     /**
