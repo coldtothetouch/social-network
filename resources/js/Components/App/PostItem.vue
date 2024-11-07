@@ -8,6 +8,7 @@ import ReadMoreOrHide from "@/Components/App/ReadMoreOrHide.vue";
 import CommentList from "@/Components/App/CommentList.vue";
 import {router} from "@inertiajs/vue3";
 import axios from "axios";
+import {computed} from "vue";
 
 const props = defineProps({
     post: Object,
@@ -39,6 +40,11 @@ function sendReaction() {
         })
 }
 
+const postBody = computed(() => props.post.body.replace(
+    /(#\w+)(?![^<]*<\/a>)/,
+    (match) => `<a href="/search/${encodeURIComponent(match)}">${match}</a>`
+))
+
 </script>
 
 <template>
@@ -48,7 +54,7 @@ function sendReaction() {
             <EditDeleteDropdown :post="post" @edit="openEditModal" @delete="deletePost()"/>
         </div>
         <div class="overflow-hidden" v-if="post.body">
-            <ReadMoreOrHide :content="post.body"/>
+            <ReadMoreOrHide :content="postBody"/>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-2 sm:grid-cols-1 gap-3">

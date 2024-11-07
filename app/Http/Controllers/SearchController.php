@@ -19,10 +19,19 @@ class SearchController extends Controller
             return redirect()->route('home');
         }
 
+        $publicGroupIds = Group::query()
+            ->where('private', 0)
+            ->get()
+            ->pluck('id');
+
         $posts = Post::query()
             ->with('user')
             ->where('body', 'like', "%$search%")
-            ->whereIn('group_id', auth()->user()->groups->pluck('id'))
+            ->where(function ($query) use ($publicGroupIds) {
+                $query->whereIn('group_id', $publicGroupIds)
+                    ->orWhereIn('group_id', auth()->user()->groups->pluck('id'));
+            })
+            ->latest()
             ->paginate(5);
 
         if ($request->wantsJson()) {

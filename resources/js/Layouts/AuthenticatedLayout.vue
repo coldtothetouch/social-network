@@ -17,7 +17,7 @@ const props = defineProps({
 const keywords = ref(usePage().props.search ?? '')
 
 function search() {
-    router.get(route('search', keywords.value))
+    router.get(route('search', encodeURIComponent(keywords.value)))
 }
 </script>
 
