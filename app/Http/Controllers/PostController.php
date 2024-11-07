@@ -38,7 +38,12 @@ class PostController extends Controller
             $files = $data['attachments'] ?? [];
 
             foreach ($files as $file) {
-                $path = $file->storeAs("attachments/$post->id", Str::random(32) . '.jpg', 'public');
+                $path = $file->storeAs(
+                    "attachments/$post->id",
+                    Str::random(32) . ".{$file->extension()}",
+                    'public'
+                );
+
                 $allFilePaths[] = $path;
 
                 PostAttachment::query()->create([
@@ -47,7 +52,7 @@ class PostController extends Controller
                     'size' => $file->getSize(),
                     'name' => $file->getClientOriginalName(),
                     'path' => $path,
-                    'created_by' => $request->user(),
+                    'created_by' => $request->user()->id,
                 ]);
             }
 
@@ -167,6 +172,9 @@ class PostController extends Controller
     public function destroy(Post $post): Response|RedirectResponse
     {
         if ($post->isOwnedByAuthUser() || $post->group?->authUserIsAdmin()) {
+            $post->attachments->each(function ($attachment) {
+                $attachment->delete();
+            });
             $post->delete();
             return back();
         }

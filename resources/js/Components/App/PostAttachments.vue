@@ -1,6 +1,7 @@
 <script setup>
 import {ArrowUpTrayIcon, DocumentIcon} from '@heroicons/vue/24/outline'
-import {isImage} from "@/helpers.js";
+import {isImage, isVideo} from "@/helpers.js";
+import {PlayCircleIcon} from "@heroicons/vue/24/outline/index.js";
 
 const props = defineProps({
     attachments: Array
@@ -26,6 +27,11 @@ defineEmits(['attachmentClick'])
 
             <img v-if="isImage(attachment)" :src="attachment.url" class="object-cover aspect-square rounded-md"
                  :alt="attachment.name">
+
+            <div v-else-if="isVideo(attachment)" class="relative flex justify-center items-center">
+                <PlayCircleIcon class="absolute size-[140px] p-3 text-white"/>
+                <video :src="attachment.url" class="aspect-square"></video>
+            </div>
 
             <div v-else
                  class="bg-gray-100 aspect-square flex flex-col items-center justify-center rounded-md text-gray-400">

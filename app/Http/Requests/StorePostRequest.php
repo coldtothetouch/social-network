@@ -4,11 +4,9 @@ namespace App\Http\Requests;
 
 use App\Enums\GroupUserStatus;
 use App\Models\GroupUser;
-use App\Models\PostAttachment;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rules\File;
-use phpDocumentor\Reflection\Types\Integer;
 
 class StorePostRequest extends FormRequest
 {
@@ -34,7 +32,7 @@ class StorePostRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $totalSize = collect($value)->sum(fn(UploadedFile $file) => $file->getSize());
 
-                    if ($totalSize > 1000 * 1024) {
+                    if ($totalSize > 1024 * 1024 * 1024) {
                         $fail('The total size of all files must not exceed 1GB.');
                     }
                 }

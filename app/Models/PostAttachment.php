@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PostAttachment extends Model
 {
-    use HasFactory;
-
     const UPDATED_AT = null;
 
     protected static function boot()
@@ -27,6 +25,6 @@ class PostAttachment extends Model
         'size',
         'name',
         'path',
-        'crated_by',
+        'created_by',
     ];
 }

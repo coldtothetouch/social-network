@@ -1,15 +1,8 @@
 <script setup>
 import {computed} from 'vue'
-import {
-    TransitionRoot, TransitionChild,
-    Dialog, DialogPanel
-} from '@headlessui/vue'
-import {
-    XMarkIcon,
-    DocumentIcon,
-    ChevronLeftIcon, ChevronRightIcon
-} from "@heroicons/vue/24/outline"
-import {isImage} from "@/helpers.js";
+import {Dialog, DialogPanel, TransitionChild, TransitionRoot} from '@headlessui/vue'
+import {ChevronLeftIcon, ChevronRightIcon, DocumentIcon, XMarkIcon,} from "@heroicons/vue/24/outline"
+import {isImage, isVideo} from "@/helpers.js";
 
 const props = defineProps({
     attachments: {
@@ -107,6 +100,8 @@ function showPrevious() {
                                         <img v-if="isImage(attachment)" :src="attachment.url"
                                              class="max-w-full object-contain max-h-full rounded-md select-none"
                                              :alt="attachment.name">
+
+                                        <video v-else-if="isVideo(attachment)" :src="attachment.url" controls autoplay/>
 
                                         <div v-else
                                              class="bg-gray-100 p-20 flex flex-col items-center justify-center text-gray-400">
