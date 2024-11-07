@@ -10,6 +10,7 @@ use App\Models\PostAttachment;
 use App\Models\User;
 use App\Notifications\NewPost;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
+use OpenAI\Laravel\Facades\OpenAI;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Throwable;
 
@@ -135,6 +137,23 @@ class PostController extends Controller
         }
 
         return back();
+    }
+
+    public function generate(Request $request)
+    {
+        $prompt = $request->get('prompt');
+
+        $result = OpenAI::chat()->create([
+            'model' => 'gpt-3.5-turbo',
+            'messages' => [
+                [
+                    'role' => 'user',
+                    'content' => "Сгенерируй пост из социальной сети на основе этого промпта: $prompt"
+                ],
+            ],
+        ]);
+
+        return response(['content' => $result->choices[0]->message->content]);
     }
 
     public function download(PostAttachment $attachment): BinaryFileResponse

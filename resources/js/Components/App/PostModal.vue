@@ -9,7 +9,7 @@ import {
 } from '@headlessui/vue'
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
 import {isImage} from '@/helpers.js'
-import {XMarkIcon, PaperClipIcon, ArrowUturnLeftIcon} from "@heroicons/vue/24/outline"
+import {XMarkIcon, PaperClipIcon, ArrowUturnLeftIcon, SparklesIcon} from "@heroicons/vue/24/outline"
 import {useForm, usePage} from "@inertiajs/vue3";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -60,8 +60,7 @@ function closeModal() {
     resetModal()
 }
 
-function resetModal()
-{
+function resetModal() {
     form.reset()
 
     attachmentFiles.value = []
@@ -94,6 +93,7 @@ const showAllowedExtensionsText = computed(() => {
     }
     return false
 })
+
 async function onAttachmentChoose(event) {
     for (const file of event.target.files) {
         const myFile = {
@@ -202,6 +202,13 @@ function restoreFile(file) {
     form.deleted_file_ids = form.deleted_file_ids.filter(id => id !== file.id)
 }
 
+function generatePost() {
+    if (!form.body) return
+    axios.post(route('posts.generate'), {prompt: form.body})
+        .then(({data}) => form.body = data.content)
+        .catch(e => console.log(e))
+}
+
 </script>
 
 <template>
@@ -252,6 +259,8 @@ function restoreFile(file) {
 
                                     <div class="mt-2">
                                         <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"/>
+                                        <SparklesIcon @click="generatePost()"
+                                                      class="cursor-pointer size-7 bg-indigo-500 text-white p-1 rounded-md"></SparklesIcon>
 
                                         <div v-if="showAllowedExtensionsText"
                                              class="border-l-8 border-amber-300 text-gray-700 bg-amber-100 p-3 mt-3">
