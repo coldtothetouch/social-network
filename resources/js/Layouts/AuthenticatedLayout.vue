@@ -4,18 +4,29 @@ import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import {Link, usePage} from '@inertiajs/vue3';
+import {Link, router, usePage} from '@inertiajs/vue3';
+import TextInput from "@/Components/TextInput.vue";
 
 const showingNavigationDropdown = ref(false);
 const authUser = usePage().props.auth.user
+
+const props = defineProps({
+    search: String,
+})
+
+const keywords = ref(usePage().props.search ?? '')
+
+function search() {
+    router.get(route('search', keywords.value))
+}
 </script>
 
 <template>
     <div class="h-full overflow-hidden flex flex-col bg-gray-100">
         <nav class="bg-white border-b border-gray-100 shadow">
             <!-- Primary Navigation Menu -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
-                <div class="flex justify-between h-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center gap-4 h-16">
                     <div class="flex">
                         <!-- Logo -->
                         <div class="shrink-0 flex items-center">
@@ -32,6 +43,9 @@ const authUser = usePage().props.auth.user
                                                             Dashboard
                                                         </NavLink>
                                                     </div>-->
+                    </div>
+                    <div class="flex-1">
+                        <TextInput v-model="keywords" @keyup.enter="search" class="w-full" placeholder="Search on the website"/>
                     </div>
 
                     <div class="hidden sm:flex sm:items-center sm:ms-6">

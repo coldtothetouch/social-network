@@ -55,7 +55,7 @@ const allPosts = ref({
 
 watch(() => page.props.posts, () => {
     if (page.props.posts.data) {
-        allPosts.value.data = props.posts
+        allPosts.value.data = page.props.posts.data
         allPosts.value.next = usePage().props.posts.links.next
     }
 }, {immediate: true})

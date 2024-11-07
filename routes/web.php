@@ -6,6 +6,7 @@ use App\Http\Controllers\PostCommentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReactionController;
+use App\Http\Controllers\SearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->middleware(['auth'])->name('home');
@@ -77,5 +78,7 @@ Route::group([
     Route::post('{group}/change-role', 'changeRole')->name('role.change');
     Route::delete('{group}/leave', 'leaveGroup')->name('leave');
 });
+
+Route::get('/search/{search?}', SearchController::class)->middleware('auth')->name('search');
 
 require __DIR__ . '/auth.php';
