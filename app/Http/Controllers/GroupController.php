@@ -8,6 +8,7 @@ use App\Http\Requests\InviteUserRequest;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
 use App\Http\Resources\GroupResource;
+use App\Http\Resources\PostAttachmentResource;
 use App\Http\Resources\PostResource;
 use App\Models\Group;
 use App\Models\GroupUser;
@@ -25,6 +26,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,7 +35,8 @@ class GroupController extends Controller
 {
     public function show(Request $request, Group $group)
     {
-        $posts = [];
+        $posts = collect();
+        $photos = collect();
 
         if ($group->hasApprovedUser(auth()->id())) {
             $posts = Post::query()
@@ -50,6 +53,10 @@ class GroupController extends Controller
                 ->where('group_id', $group->id)
                 ->latest('updated_at')
                 ->paginate(20);
+
+            $photos = $posts->pluck('attachments')
+                ->flatten()
+                ->where(fn($attachment) => Str::match('#image/.*#', $attachment->mime));
         }
 
         if ($request->wantsJson()) {
@@ -60,6 +67,7 @@ class GroupController extends Controller
             'group' => GroupResource::make($group->load('authGroupUser')),
             'status' => session('status'),
             'posts' => PostResource::collection($posts),
+            'photos' => PostAttachmentResource::collection($photos),
         ]);
     }
 

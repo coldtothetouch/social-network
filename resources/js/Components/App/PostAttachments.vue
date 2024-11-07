@@ -16,7 +16,7 @@ defineEmits(['attachmentClick'])
 
             <div v-if="i === 3 && props.attachments.length > 4"
                  class="absolute top-0 left-0 bottom-0 right-0 flex items-center justify-center text-2xl text-white bg-black/40 rounded-md">
-                +{{ post.attachments.length - 3 }} more...
+                +{{ attachments.length - 3 }} more...
             </div>
 
             <a @click.stop :href="route('posts.attachments.download', attachment)"

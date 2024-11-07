@@ -14,6 +14,7 @@ import TextInput from "@/Components/TextInput.vue";
 import GroupForm from "@/Components/App/GroupForm.vue";
 import PostList from "@/Components/App/PostList.vue";
 import CreatePost from "@/Components/App/CreatePost.vue";
+import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal.vue";
 
 const user = usePage().props.auth.user
 const coverImageSrc = ref('')
@@ -25,6 +26,7 @@ const props = defineProps({
         type: Object,
     },
     posts: Object,
+    photos: Array,
     status: {
         type: String,
     },
@@ -173,11 +175,24 @@ function leaveGroup() {
 
     form.delete(route('groups.leave', props.group))
 }
+
+const showPreviewModal = ref(false)
+const previewIndex = ref(null)
+
+function openPreviewModal(index) {
+    previewIndex.value = index
+    showPreviewModal.value = true
+}
 </script>
 
 <template>
     <InviteUserModal v-model="showInviteUseModal"/>
     <AuthenticatedLayout>
+        <AttachmentPreviewModal
+            :attachments="photos"
+            v-model:index="previewIndex"
+            v-model="showPreviewModal"
+        />
         <div class="max-w-[1300px] mx-auto h-full overflow-y-auto">
             <div
                 v-show="showFlash && status"
@@ -337,7 +352,9 @@ function leaveGroup() {
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>
-                            Photos
+                            <div class="flex flex-wrap gap-3">
+                                <img @click="openPreviewModal(i)" class="size-[300px] rounded-lg" v-for="(photo, i) in props.photos" :src="photo.url" alt="">
+                            </div>
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>

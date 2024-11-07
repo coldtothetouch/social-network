@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Resources\PostAttachmentResource;
 use App\Http\Resources\PostResource;
 use App\Http\Resources\UserResource;
 use App\Models\Follower;
@@ -17,6 +18,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -25,7 +27,7 @@ class ProfileController extends Controller
     public function index(Request $request, User $user)
     {
         $posts = Post::query()
-            ->with('user')
+            ->with('user', 'attachments')
             ->where('user_id', $user->id)
             ->where('group_id', null)
             ->latest()
@@ -35,11 +37,16 @@ class ProfileController extends Controller
             return PostResource::collection($posts);
         }
 
+        $photos = $posts->pluck('attachments')
+            ->flatten()
+            ->where(fn($attachment) => Str::match('#image/.*#', $attachment->mime));
+
         return Inertia::render('Profile/View', [
             'user' => UserResource::make($user),
             'posts' => PostResource::collection($posts),
             'followers' => UserResource::collection($user->followers),
             'followings' => UserResource::collection($user->followings),
+            'photos' => PostAttachmentResource::collection($photos),
             'status' => session('status'),
         ]);
     }

@@ -13,6 +13,7 @@ import CreatePost from "@/Components/App/CreatePost.vue";
 import PostList from "@/Components/App/PostList.vue";
 import UserListItem from "@/Components/App/UserListItem.vue";
 import TextInput from "@/Components/TextInput.vue";
+import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal.vue";
 
 const authUser = usePage().props.auth.user
 
@@ -36,6 +37,7 @@ const props = defineProps({
         type: Object,
     },
     posts: Object,
+    photos: Array,
     followers: Array,
     followings: Array,
 });
@@ -115,10 +117,22 @@ function followUser() {
     })
 }
 
+const showPreviewModal = ref(false)
+const previewIndex = ref(null)
+
+function openPreviewModal(index) {
+    previewIndex.value = index
+    showPreviewModal.value = true
+}
 </script>
 
 <template>
     <AuthenticatedLayout>
+        <AttachmentPreviewModal
+            :attachments="photos"
+            v-model:index="previewIndex"
+            v-model="showPreviewModal"
+        />
         <div class="max-w-[1300px] mx-auto h-full overflow-y-auto">
             <div
                 v-show="showFlash && status"
@@ -257,7 +271,9 @@ function followUser() {
                         </TabPanel>
                         <TabPanel
                             class='shadow bg-white p-5'>
-                            Photos
+                            <div class="flex flex-wrap gap-3">
+                                <img @click="openPreviewModal(i)" class="size-[300px] rounded-lg" v-for="(photo, i) in props.photos" :src="photo.url" alt="">
+                            </div>
                         </TabPanel>
                         <TabPanel
                             v-if="isMyProfile"
