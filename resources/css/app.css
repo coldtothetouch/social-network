@@ -30,6 +30,10 @@
     height: 100%;
 }
 
+.ck.ck-balloon-panel.ck-balloon-panel_position_border-side_right.ck-balloon-panel_visible.ck-powered-by-balloon {
+    display: none;
+}
+
 .ck-content > blockquote,
 .ck-content > dl,
 .ck-content > dd,

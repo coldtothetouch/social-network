@@ -9,6 +9,7 @@ import CommentList from "@/Components/App/CommentList.vue";
 import {router} from "@inertiajs/vue3";
 import axios from "axios";
 import {computed} from "vue";
+import PreviewUrl from "@/Components/App/PreviewUrl.vue";
 
 const props = defineProps({
     post: Object,
@@ -41,8 +42,8 @@ function sendReaction() {
 }
 
 const postBody = computed(() => props.post.body.replace(
-    /(#\w+)(?![^<]*<\/a>)/,
-    (match) => `<a href="/search/${encodeURIComponent(match)}">${match}</a>`
+    /(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/,
+    (match, group1, group2) => `${group1 || ''}<a href="/search/${encodeURIComponent(group2)}">${group2}</a>`
 ))
 
 </script>
@@ -53,8 +54,9 @@ const postBody = computed(() => props.post.body.replace(
             <PostUserHeader :post="post"/>
             <EditDeleteDropdown :post="post" @edit="openEditModal" @delete="deletePost()"/>
         </div>
-        <div class="overflow-hidden" v-if="post.body">
+        <div class="overflow-hidden" v-if="post.body || post.preview_url">
             <ReadMoreOrHide :content="postBody"/>
+            <PreviewUrl :preview="post.preview" :url="post.preview_url"/>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-2 sm:grid-cols-1 gap-3">

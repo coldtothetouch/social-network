@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\PostAttachment;
 use App\Models\User;
 use App\Notifications\NewPost;
+use DOMDocument;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -77,6 +78,34 @@ class PostController extends Controller
         }
 
         return back();
+    }
+
+    public function fetchUrlPreview(Request $request)
+    {
+        $data = $request->validate(['url' => 'required|url']);
+        $url = $data['url'];
+
+        $content = file_get_contents($url);
+
+        $dom = new DOMDocument();
+
+        libxml_use_internal_errors(true);
+
+        $dom->loadHTML($content);
+
+        libxml_use_internal_errors(false);
+
+        $ogTags = [];
+        $metaTags = $dom->getElementsByTagName('meta');
+
+        foreach ($metaTags as $metaTag) {
+            $property = $metaTag->getAttribute('property');
+            if(str_starts_with($property, 'og:')) {
+                $ogTags[$property] = $metaTag->getAttribute('content');
+            }
+        }
+
+        return $ogTags;
     }
 
     public function show(Post $post): \Inertia\Response

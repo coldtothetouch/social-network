@@ -16,6 +16,8 @@ class PostResource extends JsonResource
         return [
             'id' => $this->id,
             'body' => $this->body,
+            'preview' => $this->preview,
+            'preview_url' => $this->preview_url,
             'created_at' => (new Carbon($this->created_at))->diffForHumans(),
             'updated_at' => (new Carbon($this->updated_at))->diffForHumans(),
             'user' => UserResource::make($this->user),

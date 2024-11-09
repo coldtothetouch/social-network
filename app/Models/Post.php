@@ -21,7 +21,13 @@ class Post extends Model
         'user_id',
         'group_id',
         'deleted_by',
-        'deleted_at'
+        'deleted_at',
+        'preview',
+        'preview_url',
+    ];
+
+    protected $casts = [
+        'preview' => 'json',
     ];
 
     public function user(): BelongsTo

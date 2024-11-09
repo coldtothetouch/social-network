@@ -12,6 +12,7 @@ import {isImage} from '@/helpers.js'
 import {XMarkIcon, PaperClipIcon, ArrowUturnLeftIcon, SparklesIcon} from "@heroicons/vue/24/outline"
 import {useForm, usePage} from "@inertiajs/vue3";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import PreviewUrl from "@/Components/App/PreviewUrl.vue";
 
 const props = defineProps({
     post: {
@@ -37,6 +38,7 @@ const computedAttachments = computed(() => {
 
 watch(() => props.post, () => {
     form.body = props.post.body || ''
+    onInput()
 })
 
 const show = computed({
@@ -74,6 +76,8 @@ function resetModal() {
 
 const form = useForm({
     body: '',
+    preview: {},
+    preview_url: null,
     attachments: [],
     group_id: null,
     deleted_file_ids: [],
@@ -136,6 +140,9 @@ async function readFile(file) {
 
 const editor = ClassicEditor
 const editorConfig = {
+    mediaEmbed: {
+        removeProviders: ['youtube', 'twitter'],
+    },
     toolbar: [
         'heading',
         '|',
@@ -209,6 +216,53 @@ function generatePost() {
         .catch(e => console.log(e))
 }
 
+function fetchPreview(url) {
+    if (url === form.preview_url) {
+        return
+    }
+
+    form.preview_url = url
+    form.preview = {}
+
+    axios.post(route('posts.fetch-url-preview'), {url})
+        .then(({data}) => {
+            form.preview = {
+                title: data['og:title'],
+                description: data['og:description'],
+                image: data['og:image'],
+            }
+        });
+}
+
+function onInput() {
+    let url = matchHref()
+    if (!url) {
+        url = matchLink()
+    }
+    if (url) {
+        fetchPreview(url);
+    }
+}
+
+function matchLink() {
+    const regex = /(https?:\/\/[^\s<]*)/
+    const match = form.body.match(regex)
+    if (match) {
+        return match[1]
+    }
+    return null
+}
+
+
+function matchHref() {
+    const regex = /<a.*href="(https?:\/\/.*)">/
+    const match = form.body.match(regex)
+    if (match) {
+        return match[1]
+    }
+    return null
+}
+
 </script>
 
 <template>
@@ -258,9 +312,14 @@ function generatePost() {
                                     <PostUserHeader :post="post" :show-time="false"/>
 
                                     <div class="mt-2">
-                                        <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"/>
-                                        <SparklesIcon @click="generatePost()"
-                                                      class="cursor-pointer size-7 bg-indigo-500 text-white p-1 rounded-md"></SparklesIcon>
+                                        <div class="relative group mb-4">
+                                            <ckeditor :editor="editor" v-model="form.body" :config="editorConfig"
+                                                      @input="onInput"/>
+                                            <SparklesIcon @click="generatePost()"
+                                                          class="group-hover:opacity-100 opacity-0 absolute top-12 right-2 cursor-pointer size-7 bg-indigo-500 text-white p-1 rounded-md"></SparklesIcon>
+                                        </div>
+
+                                        <PreviewUrl :preview="form.preview" :url="form.preview_url"/>
 
                                         <div v-if="showAllowedExtensionsText"
                                              class="border-l-8 border-amber-300 text-gray-700 bg-amber-100 p-3 mt-3">
