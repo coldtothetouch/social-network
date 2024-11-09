@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
-use App\Http\Resources\PostResource;
+use App\Http\Resources\Post\FeedPostResource;
 use App\Models\Post;
 use App\Models\PostAttachment;
 use App\Models\User;
@@ -118,9 +118,8 @@ class PostController extends Controller
             }
         ]);
 
-
         return Inertia::render('Post/Show', [
-            'post' => PostResource::make($post),
+            'post' => FeedPostResource::make($post),
         ]);
     }
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Enums\ReactionEnum;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -66,10 +67,10 @@ class Post extends Model
         return $this->reactions()->where('type', ReactionEnum::LIKE);
     }
 
-    public function scopeFeed(Builder $query): void
+    public function scopeFeed(Builder $query, Collection $groups, Collection $followers): void
     {
-        $followedGroupIds = auth()->user()->groups->pluck('id');
-        $followedUserIds = auth()->user()->followings->pluck('id');
+        $followedGroupIds = $groups->pluck('id');
+        $followedUserIds = $followers->pluck('id');
 
         $query->whereIn('group_id', $followedGroupIds)
             ->orWhere(function ($query) use ($followedUserIds) {

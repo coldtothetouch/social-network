@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Resources\Post\UserPostResource;
 use App\Http\Resources\PostAttachmentResource;
-use App\Http\Resources\PostResource;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\User\FollowerUserResource;
+use App\Http\Resources\User\FollowingUserResource;
+use App\Http\Resources\User\UserResource;
 use App\Models\Follower;
 use App\Models\Post;
 use App\Models\User;
 use App\Notifications\NewFollower;
-use Carbon\Carbon;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,26 +28,33 @@ class ProfileController extends Controller
     public function index(Request $request, User $user)
     {
         $posts = Post::query()
-            ->with('user', 'attachments')
+            ->with([
+                'user', 'attachments', 'reactions',
+                'comments' => function ($query) {
+                    $query->with(['reactions', 'user'])->withCount('likes');
+                }
+            ])
             ->where('user_id', $user->id)
             ->where('group_id', null)
             ->orderBy('is_pinned', 'desc')
             ->latest()
-            ->paginate(10);
+            ->paginate(20);
 
         if ($request->wantsJson()) {
-            return PostResource::collection($posts);
+            return UserPostResource::collection($posts);
         }
 
         $photos = $posts->pluck('attachments')
             ->flatten()
             ->where(fn($attachment) => Str::match('#image/.*#', $attachment->mime));
 
+        $user->load('followers');
+
         return Inertia::render('Profile/View', [
             'user' => UserResource::make($user),
-            'posts' => PostResource::collection($posts),
-            'followers' => UserResource::collection($user->followers),
-            'followings' => UserResource::collection($user->followings),
+            'posts' => UserPostResource::collection($posts),
+            'followers' => FollowerUserResource::collection($user->followers),
+            'followings' => FollowingUserResource::collection($user->followings),
             'photos' => PostAttachmentResource::collection($photos),
             'status' => session('status'),
         ]);

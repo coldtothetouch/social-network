@@ -92,7 +92,7 @@ function copyToClipboard() {
                         </Link>
                     </MenuItem>
 
-                    <MenuItem v-if="editAllowed" v-slot="{ active }">
+                    <MenuItem v-slot="{ active }">
                         <button @click="copyToClipboard"
                                 :class="[
                               active ? 'bg-gray-100' : '',
