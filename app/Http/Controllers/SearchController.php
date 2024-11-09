@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\GroupResource;
-use App\Http\Resources\PostResource;
-use App\Http\Resources\UserResource;
+use App\Http\Resources\Group\FeedGroupResource;
+use App\Http\Resources\Post\FeedPostResource;
+use App\Http\Resources\User\FeedUserResource;
 use App\Models\Group;
 use App\Models\Post;
 use App\Models\User;
@@ -25,9 +25,12 @@ class SearchController extends Controller
             ->pluck('id');
 
         $posts = Post::query()
-            ->with(['user', 'comments', 'reactions' => function ($query) {
-                $query->where('user_id', auth()->id());
-            }])
+            ->with([
+                'user', 'group.authGroupUser', 'attachments', 'reactions',
+                'comments' => function ($query) {
+                    $query->with(['reactions', 'user'])->withCount('likes');
+                }
+            ])
             ->withCount('reactions')
             ->where('body', 'like', "%$search%")
             ->where(function ($query) use ($publicGroupIds) {
@@ -38,7 +41,7 @@ class SearchController extends Controller
             ->paginate(5);
 
         if ($request->wantsJson()) {
-            return PostResource::collection($posts);
+            return FeedPostResource::collection($posts);
         }
 
         $users = User::query()
@@ -53,9 +56,9 @@ class SearchController extends Controller
 
         return Inertia::render('Search', [
             'search' => $search,
-            'users' => UserResource::collection($users),
-            'posts' => PostResource::collection($posts),
-            'groups' => GroupResource::collection($groups),
+            'users' => FeedUserResource::collection($users),
+            'posts' => FeedPostResource::collection($posts),
+            'groups' => FeedGroupResource::collection($groups),
         ]);
     }
 }

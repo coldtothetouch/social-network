@@ -7,13 +7,12 @@ use App\Enums\GroupUserStatus;
 use App\Http\Requests\InviteUserRequest;
 use App\Http\Requests\StoreGroupRequest;
 use App\Http\Requests\UpdateGroupRequest;
-use App\Http\Resources\GroupResource;
+use App\Http\Resources\Group\GroupResource;
+use App\Http\Resources\Post\GroupPostResource;
 use App\Http\Resources\PostAttachmentResource;
-use App\Http\Resources\PostResource;
 use App\Models\Group;
 use App\Models\GroupUser;
 use App\Models\Post;
-use App\Models\User;
 use App\Notifications\InvitationApproved;
 use App\Notifications\InvitationInGroup;
 use App\Notifications\NewGroupRequest;
@@ -40,20 +39,16 @@ class GroupController extends Controller
 
         if ($group->hasApprovedUser(auth()->id())) {
             $posts = Post::query()
-                ->withCount(['reactions', 'comments'])
                 ->with([
-                    'user', 'group', 'attachments',
-                    'reactions' => function ($query) {
-                        $query->where('user_id', auth()->id());
-                    },
+                    'user', 'group.authGroupUser', 'attachments', 'reactions',
                     'comments' => function ($query) {
-                        $query->withCount('likes');
+                        $query->with(['reactions', 'user'])->withCount('likes');
                     }
                 ])
                 ->where('group_id', $group->id)
                 ->orderBy('is_pinned', 'desc')
                 ->latest('updated_at')
-                ->paginate(20);
+                ->paginate(10);
 
             $photos = $posts->pluck('attachments')
                 ->flatten()
@@ -61,13 +56,13 @@ class GroupController extends Controller
         }
 
         if ($request->wantsJson()) {
-            return PostResource::collection($posts);
+            return GroupPostResource::collection($posts);
         }
 
         return Inertia::render('Group/View', [
-            'group' => GroupResource::make($group->load('authGroupUser')),
+            'group' => GroupResource::make($group),
             'status' => session('status'),
-            'posts' => PostResource::collection($posts),
+            'posts' => GroupPostResource::collection($posts),
             'photos' => PostAttachmentResource::collection($photos),
         ]);
     }
