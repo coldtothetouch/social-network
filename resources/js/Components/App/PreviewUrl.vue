@@ -11,7 +11,7 @@ defineProps({
 </script>
 
 <template>
-    <a :href="url" target="_blank" v-if="preview.title">
+    <a :href="url" target="_blank" v-if="preview && preview.title">
         <img :src="preview.image" :alt="preview.title" class="max-w-full">
         <div class="border p-2 bg-indigo-50">
             <h3 class="text-lg font-semibold">{{ preview.title }}</h3>

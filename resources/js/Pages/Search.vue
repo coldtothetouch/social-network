@@ -33,7 +33,7 @@ const props = defineProps({
             </div>
             <div class="p-3 h-full flex flex-col shadow bg-white rounded overflow-hidden">
                 <h2 class="text-lg font-bold">Posts</h2>
-                <PostList class="flex-1" :posts="posts"/>
+                <PostList :posts="posts"/>
             </div>
         </div>
     </AuthenticatedLayout>

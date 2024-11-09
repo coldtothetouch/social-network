@@ -100,7 +100,7 @@ class PostController extends Controller
 
         foreach ($metaTags as $metaTag) {
             $property = $metaTag->getAttribute('property');
-            if(str_starts_with($property, 'og:')) {
+            if (str_starts_with($property, 'og:')) {
                 $ogTags[$property] = $metaTag->getAttribute('content');
             }
         }
@@ -188,6 +188,30 @@ class PostController extends Controller
         ]);
 
         return response(['content' => $result->choices[0]->message->content]);
+    }
+
+    public function pin(Post $post)
+    {
+        if ($post->group?->authUserIsAdmin()) {
+            Post::query()
+                ->where('group_id', $post->group->id)
+                ->where('is_pinned', true)
+                ->update(['is_pinned' => false]);
+
+            $post->update(['is_pinned' => !$post->is_pinned]);
+
+            return back()->with('status', $post->is_pinned ? 'Post pinned' : 'Post unpinned');
+        } else if ($post->isOwnedByAuthUser() && is_null($post->group)) {
+            Post::query()
+                ->whereNull('group_id')
+                ->where('user_id', auth()->id())->update(['is_pinned' => false]);
+
+            $post->update(['is_pinned' => !$post->is_pinned]);
+
+            return back()->with('status', $post->is_pinned ? 'Post pinned' : 'Post unpinned');
+        }
+
+        return response('Forbidden', 403);
     }
 
     public function download(PostAttachment $attachment): BinaryFileResponse

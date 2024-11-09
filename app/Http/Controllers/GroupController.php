@@ -51,6 +51,7 @@ class GroupController extends Controller
                     }
                 ])
                 ->where('group_id', $group->id)
+                ->orderBy('is_pinned', 'desc')
                 ->latest('updated_at')
                 ->paginate(20);
 

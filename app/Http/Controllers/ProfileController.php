@@ -30,6 +30,7 @@ class ProfileController extends Controller
             ->with('user', 'attachments')
             ->where('user_id', $user->id)
             ->where('group_id', null)
+            ->orderBy('is_pinned', 'desc')
             ->latest()
             ->paginate(10);
 

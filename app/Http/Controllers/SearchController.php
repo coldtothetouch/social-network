@@ -25,7 +25,10 @@ class SearchController extends Controller
             ->pluck('id');
 
         $posts = Post::query()
-            ->with('user')
+            ->with(['user', 'comments', 'reactions' => function ($query) {
+                $query->where('user_id', auth()->id());
+            }])
+            ->withCount('reactions')
             ->where('body', 'like', "%$search%")
             ->where(function ($query) use ($publicGroupIds) {
                 $query->whereIn('group_id', $publicGroupIds)

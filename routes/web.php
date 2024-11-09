@@ -33,10 +33,11 @@ Route::group([
     Route::get('{post}', 'show')->name('show');
     Route::put('{post}', 'update')->name('update');
     Route::delete('{post}', 'destroy')->name('destroy');
-    Route::post('/fetch-url-preview', 'fetchUrlPreview')->name('fetch-url-preview');
 
-    Route::post('/generate', 'generate')->name('generate');
+    Route::post('{post}/pin', 'pin')->name('pin');
 
+    Route::post('generate', 'generate')->name('generate');
+    Route::post('fetch-url-preview', 'fetchUrlPreview')->name('fetch-url-preview');
     Route::get('attachments/{attachment}/download', 'download')->name('attachments.download');
 });
 

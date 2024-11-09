@@ -269,11 +269,12 @@ function openPreviewModal(index) {
                                 This user is not following anybody
                             </div>
                         </TabPanel>
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            <div class="flex flex-wrap gap-3">
-                                <img @click="openPreviewModal(i)" class="size-[300px] rounded-lg" v-for="(photo, i) in props.photos" :src="photo.url" alt="">
+                        <TabPanel>
+                            <div v-if="props.photos.length" class="flex flex-wrap gap-3 shadow bg-white p-5">
+                                <img @click="openPreviewModal(i)" class="size-[300px] rounded-lg"
+                                     v-for="(photo, i) in props.photos" :src="photo.url" alt="">
                             </div>
+                            <div v-else class="text-2xl text-center pt-10">There is no photos</div>
                         </TabPanel>
                         <TabPanel
                             v-if="isMyProfile"

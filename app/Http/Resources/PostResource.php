@@ -11,22 +11,21 @@ class PostResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $comments = $this->comments;
-
         return [
             'id' => $this->id,
             'body' => $this->body,
             'preview' => $this->preview,
+            'is_pinned' => $this->is_pinned,
             'preview_url' => $this->preview_url,
             'created_at' => (new Carbon($this->created_at))->diffForHumans(),
             'updated_at' => (new Carbon($this->updated_at))->diffForHumans(),
             'user' => UserResource::make($this->user),
             'group' => GroupResource::make($this->group),
             'attachments' => PostAttachmentResource::collection($this->attachments),
-            'reactions_count' => $this->reactions_count,
-            'comments_count' => count($comments),
+            'reactions_count' => $this->reactions->count(),
+            'comments_count' => $this->comments->count(),
             'current_user_has_reaction' => $this->reactions->count() > 0,
-            'comments' => self::convertCommentsIntoTree($comments),
+            'comments' => self::convertCommentsIntoTree($this->comments),
         ];
     }
 

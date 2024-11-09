@@ -24,6 +24,7 @@ class Post extends Model
         'deleted_at',
         'preview',
         'preview_url',
+        'is_pinned',
     ];
 
     protected $casts = [

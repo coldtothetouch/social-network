@@ -71,7 +71,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="flex flex-col gap-3 h-full overflow-y-auto">
+    <div class="flex flex-1 flex-col gap-3 h-full overflow-y-auto">
         <PostItem
             v-if="allPosts.data.length"
             v-for="post of allPosts.data" :key="post.id"

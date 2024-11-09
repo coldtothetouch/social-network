@@ -6,7 +6,7 @@ import PostAttachments from "@/Components/App/PostAttachments.vue";
 import PostUserHeader from "@/Components/App/PostUserHeader.vue";
 import ReadMoreOrHide from "@/Components/App/ReadMoreOrHide.vue";
 import CommentList from "@/Components/App/CommentList.vue";
-import {router} from "@inertiajs/vue3";
+import {router, useForm} from "@inertiajs/vue3";
 import axios from "axios";
 import {computed} from "vue";
 import PreviewUrl from "@/Components/App/PreviewUrl.vue";
@@ -41,6 +41,11 @@ function sendReaction() {
         })
 }
 
+function pinPost() {
+    const form = useForm({})
+    form.post(route('posts.pin', props.post))
+}
+
 const postBody = computed(() => props.post.body.replace(
     /(?:(\s+)|<p>)((#\w+)(?![^<]*<\/a>))/,
     (match, group1, group2) => `${group1 || ''}<a href="/search/${encodeURIComponent(group2)}">${group2}</a>`
@@ -52,7 +57,11 @@ const postBody = computed(() => props.post.body.replace(
     <div class="border p-5 rounded-lg bg-white shadow">
         <div class="flex justify-between  items-center mb-3">
             <PostUserHeader :post="post"/>
-            <EditDeleteDropdown :post="post" @edit="openEditModal" @delete="deletePost()"/>
+            <EditDeleteDropdown :post="post"
+                                @edit="openEditModal"
+                                @delete="deletePost"
+                                @pin="pinPost"
+            />
         </div>
         <div class="overflow-hidden" v-if="post.body || post.preview_url">
             <ReadMoreOrHide :content="postBody"/>
