@@ -12,7 +12,7 @@ const search = ref('');
 </script>
 
 <template>
-    <div class="p-5 bg-white rounded-md shadow overflow-hidden flex flex-col">
+    <div class="dark:bg-slate-800 dark:text-white p-5 bg-white rounded-md shadow overflow-hidden flex flex-col">
         <div class="lg:hidden flex-1 block">
             <Disclosure v-slot="{ open }">
                 <DisclosureButton class="flex items-center w-full justify-between">

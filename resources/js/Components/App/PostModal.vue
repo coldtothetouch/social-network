@@ -299,17 +299,17 @@ function matchHref() {
                             >
                                 <DialogTitle
                                     as="h3"
-                                    class="flex items-center justify-between text-lg font-medium leading-6 text-gray-900 bg-gray-100 p-4"
+                                    class="dark:text-white dark:bg-slate-700 flex items-center justify-between text-lg font-medium leading-6 text-gray-900 bg-gray-100 p-4"
                                 >
                                     {{ post.id ? 'Edit Post' : 'Create Post' }}
                                     <button @click="closeModal"
-                                            class="hover:bg-gray-200 p-1 rounded-full focus-visible:outline-none">
+                                            class="dark:hover:bg-slate-600 p-1 rounded-full focus-visible:outline-none">
                                         <XMarkIcon class="w-4 h-4"/>
                                     </button>
                                 </DialogTitle>
 
-                                <div class="p-5">
-                                    <PostUserHeader :post="post" :show-time="false"/>
+                                <div class="p-5 dark:bg-slate-800">
+                                    <PostUserHeader class="mb-4 text-white" :post="post" :show-time="false"/>
 
                                     <div class="mt-2">
                                         <div class="relative group mb-4">
@@ -375,14 +375,14 @@ function matchHref() {
                                     <div class="mt-4 flex gap-3">
                                         <button
                                             type="button"
-                                            class="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            class="dark:bg-slate-700 dark:text-white dark:border-slate-600 dark:hover:bg-slate-600 inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                             @click="submit"
                                         >
                                             Save
                                         </button>
                                         <button
                                             type="button"
-                                            class="relative inline-flex flex gap-1 items-center justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            class="dark:bg-slate-700 dark:text-white dark:border-slate-600 dark:hover:bg-slate-600 relative inline-flex flex gap-1 items-center justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                         >
                                             <PaperClipIcon class="w-4 h-4"/>
                                             Attach

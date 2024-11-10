@@ -236,7 +236,7 @@ function openPreviewModal(index) {
                     </div>
                 </div>
 
-                <div class="flex bg-white">
+                <div class="dark:bg-slate-800 dark:text-white flex bg-white">
                     <div
                         class="flex items-center justify-center relative group/avatar -mt-[64px] ml-[48px] w-[128px] h-[128px] rounded-full">
                         <img alt="avatar" :src="avatarImageSrc  || group.avatar_path"
@@ -270,28 +270,32 @@ function openPreviewModal(index) {
                         </div>
 
                         <div class="flex gap-2">
-                            <PrimaryButton v-if="group.private && !group.role" @click="joinToGroup">
+                            <PrimaryButton class="dark:border-slate-600" v-if="group.private && !group.role"
+                                           @click="joinToGroup">
                                 Request to join
                             </PrimaryButton>
                             <PrimaryButton v-if="group.private && group.status === 'pending'"
-                                           class="!bg-gray-400 cursor-not-allowed">
+                                           class="dark:border-slate-600 !bg-gray-400 cursor-not-allowed">
                                 Request sent
                             </PrimaryButton>
-                            <PrimaryButton v-if="!group.private && !group.role" @click="joinToGroup">
+                            <PrimaryButton class="dark:border-slate-600" v-if="!group.private && !group.role"
+                                           @click="joinToGroup">
                                 Join to group
                             </PrimaryButton>
 
-                            <PrimaryButton @click="showInviteUseModal = true" v-if="currentUserIsAdmin">
+                            <PrimaryButton class="dark:border-slate-600" @click="showInviteUseModal = true"
+                                           v-if="currentUserIsAdmin">
                                 Invite users
                             </PrimaryButton>
 
                             <PrimaryButton v-if="group.private && group.status === 'rejected'"
-                                           class="cursor-default !bg-gray-400 hover:bg-gray-400">
+                                           class="dark:border-slate-600 cursor-default !bg-gray-400 hover:bg-gray-400">
                                 Request Rejected
                             </PrimaryButton>
 
                             <DangerButton
                                 @click="leaveGroup"
+                                class="dark:border-slate-600"
                                 v-if="group.role && group.role !== 'admin' && group.status !== 'pending' && group.status !== 'rejected'">
                                 Leave group
                             </DangerButton>
@@ -301,7 +305,7 @@ function openPreviewModal(index) {
             </div>
             <div>
                 <TabGroup>
-                    <TabList class="flex space-x-1 bg-blue-900/20 bg-white">
+                    <TabList class="dark:bg-slate-800 flex space-x-1 bg-blue-900/20 bg-white">
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
@@ -319,15 +323,17 @@ function openPreviewModal(index) {
                         </Tab>
                     </TabList>
 
-                    <TabPanels class="mt-2">
+                    <TabPanels class="mt-5">
                         <TabPanel>
                             <CreatePost v-if="group.status === 'approved'" :group="group"/>
                             <PostList v-if="!group.private || group.status === 'approved'" :posts="posts.data"/>
-                            <div v-else class="text-xl text-center mt-10">You don't have permission to view this content</div>
+                            <div v-else class="text-xl text-center mt-10">You don't have permission to view this
+                                content
+                            </div>
                         </TabPanel>
                         <TabPanel v-if="isJoinedGroup">
-                            <TextInput :model-value="search" placeholder="Type to search" class="w-full my-2"/>
-                            <div class="grid grid-cols-2 gap-2">
+                            <TextInput :model-value="search" placeholder="Type to search" class="dark:bg-slate-800 w-full my-2"/>
+                            <div class="grid grid-cols-2 gap-2 mt-5">
                                 <UserListItem
                                     :disable-user-role-dropdown="group.user_id === user.id"
                                     :show-user-role-dropdown="currentUserIsAdmin"
@@ -346,21 +352,23 @@ function openPreviewModal(index) {
                                               :key="user.id"/>
 
                             </div>
-                            <div v-else class="text-center mt-10 text-xl">
+                            <div v-else class="dark:text-white text-center mt-10 text-xl">
                                 No pending users
                             </div>
                         </TabPanel>
-                        <TabPanel
-                            class='shadow bg-white p-5'>
-                            <div class="flex flex-wrap gap-3">
-                                <img @click="openPreviewModal(i)" class="size-[300px] rounded-lg" v-for="(photo, i) in props.photos" :src="photo.url" alt="">
+                        <TabPanel>
+                            <div v-if="props.photos.length" class="flex flex-wrap gap-3 shadow bg-white p-5">
+                                <img @click="openPreviewModal(i)"
+                                     class="size-[300px] rounded-lg" v-for="(photo, i) in props.photos" :src="photo.url"
+                                     alt="">
                             </div>
+                            <div v-else class="dark:text-white text-xl text-center mt-10">No photos</div>
                         </TabPanel>
                         <TabPanel
-                            class='shadow bg-white p-5'>
+                            class='shadow dark:bg-slate-800 bg-white p-5'>
                             <template v-if="currentUserIsAdmin">
                                 <GroupForm :form="aboutForm"/>
-                                <PrimaryButton @click="updateGroup">Submit</PrimaryButton>
+                                <PrimaryButton class="dark:border-slate-600" @click="updateGroup">Submit</PrimaryButton>
                             </template>
                             <div class="ck-content-output" v-html="group.description" v-else/>
                         </TabPanel>

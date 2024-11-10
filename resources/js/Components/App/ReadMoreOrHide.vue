@@ -20,7 +20,7 @@ const maxContentLength = 255
 
             <div class="flex justify-end">
                 <DisclosureButton>
-                    <p class="cursor-pointer text-blue-600 hover:underline my-2">{{ open ? 'Hide' : 'Read More' }}</p>
+                    <p class="dark:text-white cursor-pointer text-blue-600 hover:underline my-2">{{ open ? 'Hide' : 'Read More' }}</p>
                 </DisclosureButton>
             </div>
 

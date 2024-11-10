@@ -84,33 +84,33 @@ function submit() {
                             >
                                 <DialogTitle
                                     as="h3"
-                                    class="flex items-center justify-between text-lg font-medium leading-6 text-gray-900 bg-gray-100 p-4"
+                                    class="dark:bg-slate-700 dark:text-white flex items-center justify-between text-lg font-medium leading-6 text-gray-900 bg-gray-100 p-4"
                                 >
                                     Invite Users
                                     <button @click="closeModal"
-                                            class="hover:bg-gray-200 p-1 rounded-full focus-visible:outline-none">
+                                            class="dark:hover:bg-slate-600 hover:bg-gray-200 p-1 rounded-full focus-visible:outline-none">
                                         <XMarkIcon class="w-4 h-4"/>
                                     </button>
                                 </DialogTitle>
 
-                                <div class="p-5">
-                                    <div class="flex flex-col w-full gap-3 mb-3">
+                                <div class="dark:bg-slate-800 p-5">
+                                    <div class="flex flex-col w-full gap-3 mb-5">
                                         <div>
-                                            <InputLabel>Username or email</InputLabel>
+                                            <InputLabel class="dark:text-white text-xl pb-2">Username or email</InputLabel>
                                             <TextInput
-                                                :class="page.props.errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
+                                                :class="page.props.errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'dark:bg-slate-700'"
                                                 v-model="form.email"/>
                                             <div class="text-red-500">{{page.props.errors.email}}</div>
                                         </div>
                                     </div>
                                     <div class="flex gap-5">
                                         <button @click="submit"
-                                                class="flex flex-1 justify-center items-center gap-1 border py-2 px-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-400"
+                                                class="dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 flex flex-1 justify-center items-center gap-1 border py-2 px-3 bg-indigo-500 text-white rounded-lg hover:bg-indigo-400"
                                         >
                                             Create
                                         </button>
                                         <button @click="closeModal"
-                                                class="flex flex-1 justify-center items-center gap-1 border py-2 px-3 rounded-lg bg-red-500 text-white hover:bg-red-400"
+                                                class="dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 flex flex-1 justify-center items-center gap-1 border py-2 px-3 rounded-lg bg-red-500 text-white hover:bg-red-400"
                                         >
                                             Cancel
                                         </button>

@@ -6,6 +6,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import {Link, router, usePage} from '@inertiajs/vue3';
 import TextInput from "@/Components/TextInput.vue";
+import {MoonIcon, SunIcon} from "@heroicons/vue/24/outline"
 
 const showingNavigationDropdown = ref(false);
 const authUser = usePage().props.auth.user
@@ -19,11 +20,25 @@ const keywords = ref(usePage().props.search ?? '')
 function search() {
     router.get(route('search', encodeURIComponent(keywords.value)))
 }
+
+const isLightMode = ref(false)
+
+function toggleDarkMode() {
+    const bodyClasses = window.document.getElementsByTagName('body')[0].classList
+
+    if (bodyClasses.contains('dark')) {
+        bodyClasses.remove('dark');
+        isLightMode.value = true
+    } else {
+        bodyClasses.add('dark');
+        isLightMode.value = false
+    }
+}
 </script>
 
 <template>
     <div class="h-full overflow-hidden flex flex-col bg-gray-100">
-        <nav class="bg-white border-b border-gray-100 shadow">
+        <nav class="bg-white dark:bg-slate-800 dark:border-slate-700 border-b border-gray-100 shadow">
             <!-- Primary Navigation Menu -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between items-center gap-4 h-16">
@@ -32,7 +47,7 @@ function search() {
                         <div class="shrink-0 flex items-center">
                             <Link :href="route('home')">
                                 <ApplicationLogo
-                                    class="block h-9 w-auto fill-current text-gray-800"
+                                    class="dark:text-white block h-9 w-auto fill-current text-gray-800"
                                 />
                             </Link>
                         </div>
@@ -44,8 +59,19 @@ function search() {
                                                         </NavLink>
                                                     </div>-->
                     </div>
-                    <div class="flex-1">
-                        <TextInput v-model="keywords" @keyup.enter="search" class="w-full" placeholder="Search on the website"/>
+                    <div class="flex flex-1 items-center">
+                        <TextInput v-model="keywords" @keyup.enter="search" class="dark:bg-slate-700 w-full"
+                                   placeholder="Search on the website"/>
+                        <div v-if="isLightMode" @click="toggleDarkMode()"
+                             class="flex items-center pr-3 text-nowrap text-gray-100 dark:text-white ml-5 rounded-full cursor-pointer bg-slate-700">
+                            <MoonIcon class="size-8 text-white p-1"/>
+                            Dark Mode
+                        </div>
+                        <div v-else @click="toggleDarkMode()"
+                             class="flex items-center pr-3 text-nowrap text-gray-100 text-black ml-5 rounded-full cursor-pointer bg-white">
+                            <SunIcon class="size-8 p-1"/>
+                            Light Mode
+                        </div>
                     </div>
 
                     <div class="hidden sm:flex sm:items-center sm:ms-6">
@@ -56,7 +82,7 @@ function search() {
                                         <span class="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                                class="dark:bg-slate-700 dark:text-white inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                             >
                                                 {{ authUser.name }}
 
@@ -77,7 +103,8 @@ function search() {
                                 </template>
 
                                 <template #content>
-                                    <DropdownLink :href="route('profile.index', { user: authUser.username })"> Profile</DropdownLink>
+                                    <DropdownLink :href="route('profile.index', { user: authUser.username })"> Profile
+                                    </DropdownLink>
                                     <DropdownLink :href="route('logout')" method="post" as="button">
                                         Log Out
                                     </DropdownLink>
@@ -146,7 +173,8 @@ function search() {
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.index', { user: authUser.username })"> Profile</ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('profile.index', { user: authUser.username })"> Profile
+                            </ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Log Out
                             </ResponsiveNavLink>
@@ -167,7 +195,7 @@ function search() {
         </header>
 
         <!-- Page Content -->
-        <main class="flex-1 overflow-hidden">
+        <main class="dark:bg-slate-900 flex-1 overflow-hidden">
             <slot/>
         </main>
     </div>

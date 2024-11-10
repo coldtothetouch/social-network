@@ -13,7 +13,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <TextInput :model-value="search" placeholder="Search for groups" class="w-full my-5"/>
+    <TextInput :model-value="search" class="dark:bg-slate-700 w-full my-5" placeholder="Search for groups" />
     <div class="h-[200px] lg:flex-1 overflow-y-auto">
         <div v-if="false" class="text-center text-gray-400">
             You are not part of any group

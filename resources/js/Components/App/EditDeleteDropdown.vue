@@ -43,7 +43,7 @@ function copyToClipboard() {
           class="relative inline-block text-left">
         <div class="rounded-full">
             <MenuButton
-                class="hover:bg-gray-100 p-2 rounded-full z-10"
+                class="dark:hover:bg-slate-600 hover:bg-gray-100 p-2 rounded-full z-10"
             >
                 <EllipsisVerticalIcon class="w-4 h-4 text-gray-400"/>
             </MenuButton>
@@ -58,14 +58,14 @@ function copyToClipboard() {
         >
 
             <MenuItems
-                class="absolute z-20 right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+                class="dark:bg-slate-700 absolute z-20 right-0 mt-2 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
             >
                 <div class="px-1 py-1">
                     <MenuItem v-if="pinAllowed" v-slot="{ active }">
                         <button @click="$emit('pin')"
                                 :class="[
                               active ? 'bg-gray-100' : '',
-                              'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                              'dark:hover:bg-slate-600 group flex w-full items-center rounded-md px-2 py-2 text-sm',
                             ]"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -81,7 +81,7 @@ function copyToClipboard() {
                         <Link :href="route('posts.show', post)"
                               :class="[
                               active ? 'bg-gray-100' : '',
-                              'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                              'dark:hover:bg-slate-600 group flex w-full items-center rounded-md px-2 py-2 text-sm',
                             ]"
                         >
                             <EyeIcon
@@ -96,7 +96,7 @@ function copyToClipboard() {
                         <button @click="copyToClipboard"
                                 :class="[
                               active ? 'bg-gray-100' : '',
-                              'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                              'dark:hover:bg-slate-600 group flex w-full items-center rounded-md px-2 py-2 text-sm',
                             ]"
                         >
                             <ClipboardIcon
@@ -111,7 +111,7 @@ function copyToClipboard() {
                         <button @click="$emit('edit')"
                                 :class="[
                               active ? 'bg-gray-100' : '',
-                              'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                              'dark:hover:bg-slate-600 group flex w-full items-center rounded-md px-2 py-2 text-sm',
                             ]"
                         >
                             <PencilIcon
@@ -127,7 +127,7 @@ function copyToClipboard() {
                             @click="$emit('delete')"
                             :class="[
                                 active ? 'bg-gray-100' : '',
-                  'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+                  'dark:hover:bg-slate-600 group flex w-full items-center rounded-md px-2 py-2 text-sm',
                 ]"
                         >
                             <TrashIcon

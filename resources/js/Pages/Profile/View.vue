@@ -176,7 +176,7 @@ function openPreviewModal(index) {
                     </div>
                 </div>
 
-                <div class="flex bg-white">
+                <div class="flex bg-white dark:bg-slate-800 dark:text-white">
                     <div
                         class="flex items-center justify-center relative group/avatar -mt-[64px] ml-[48px] w-[128px] h-[128px] rounded-full">
                         <img alt="avatar" :src="avatarImageSrc  || user.avatar_path || '/img/default_avatar.webp'"
@@ -218,9 +218,9 @@ function openPreviewModal(index) {
                     </div>
                 </div>
             </div>
-            <div class="">
+            <div>
                 <TabGroup>
-                    <TabList class="flex space-x-1 bg-blue-900/20 bg-white ">
+                    <TabList class="dark:bg-slate-800 dark:text-white flex space-x-1 bg-blue-900/20 bg-white ">
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected"/>
                         </Tab>
@@ -238,7 +238,7 @@ function openPreviewModal(index) {
                         </Tab>
                     </TabList>
 
-                    <TabPanels class="mt-2">
+                    <TabPanels class="mt-5">
                         <TabPanel>
                             <CreatePost v-if="isMyProfile"/>
                             <PostList :posts="posts.data"/>
@@ -252,20 +252,20 @@ function openPreviewModal(index) {
                                                   :user="user"/>
                                 </div>
                             </div>
-                            <div v-else class="text-2xl text-center pt-10">
+                            <div v-else class="dark:text-white text-2xl text-center pt-10">
                                 This user has no followers
                             </div>
                         </TabPanel>
                         <TabPanel>
                             <div v-if="followings.length">
                                 <TextInput :model-value="searchFollowing" placeholder="Type to search"
-                                           class="w-full my-2"/>
+                                           class="dark:bg-slate-800 w-full my-2 mb-5"/>
                                 <div class="grid grid-cols-2 gap-3">
                                     <UserListItem class="bg-white shadow-md" v-for="user in followings"
                                                   :user="user"/>
                                 </div>
                             </div>
-                            <div v-else class="text-2xl text-center pt-10">
+                            <div v-else class="dark:text-white text-2xl text-center pt-10">
                                 This user is not following anybody
                             </div>
                         </TabPanel>
@@ -274,7 +274,7 @@ function openPreviewModal(index) {
                                 <img @click="openPreviewModal(i)" class="size-[300px] rounded-lg"
                                      v-for="(photo, i) in props.photos" :src="photo.url" alt="">
                             </div>
-                            <div v-else class="text-2xl text-center pt-10">There is no photos</div>
+                            <div v-else class="dark:text-white text-2xl text-center pt-10">There is no photos</div>
                         </TabPanel>
                         <TabPanel
                             v-if="isMyProfile"

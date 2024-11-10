@@ -140,7 +140,7 @@ function sendCommentReaction(comment) {
         </Link>
         <div class="flex flex-1">
             <TextareaInput v-model="comment" placeholder="Enter your comment here..." rows="1"
-                           class="w-full resize-none rounded-r-none max-h-[160px] overflow-auto"/>
+                           class="dark:bg-slate-700 w-full resize-none rounded-r-none max-h-[160px] overflow-auto"/>
             <IndigoButton @click="storeComment()" class="w-[100px] rounded-l-none">Submit</IndigoButton>
         </div>
     </div>
@@ -154,7 +154,7 @@ function sendCommentReaction(comment) {
                          alt="avatar">
                 </Link>
 
-                <div class="w-full flex flex-col">
+                <div class="dark:text-white w-full flex flex-col">
                     <div class="flex justify-between items-center">
                         <h4 class="text-lg font-semibold">
                             <Link :href="route('profile.index', comment.user)" class="hover:underline">
@@ -182,15 +182,15 @@ function sendCommentReaction(comment) {
                     <Disclosure>
                         <div class="mt-1 flex gap-2">
                             <button @click="sendCommentReaction(comment)"
-                                    class="flex items-center text-xs text-indigo-500 hover:bg-indigo-100 rounded-lg p-1"
-                                    :class="comment.current_user_has_reaction ? 'bg-indigo-100': ''">
+                                    class="dark:text-gray-400 dark:hover:bg-slate-700 flex items-center text-xs text-indigo-500 hover:bg-indigo-100 rounded-lg p-1"
+                                    :class="comment.current_user_has_reaction ? 'dark:bg-slate-700 bg-indigo-100': ''">
                                 {{ comment.reactions_count }}
                                 <HandThumbUpIcon class="w-4 h-4 mx-1"/>
                                 {{ comment.current_user_has_reaction ? 'unlike' : 'like' }}
                             </button>
                             <DisclosureButton>
                                 <button
-                                    class="flex items-center text-xs text-underline text-indigo-500 hover:bg-indigo-100 rounded-lg p-1">
+                                    class="dark:text-gray-400 dark:hover:bg-slate-700 flex items-center text-xs text-underline text-indigo-500 hover:bg-indigo-100 rounded-lg p-1">
                                     {{ comment.comments_count }}
                                     <ChatBubbleLeftEllipsisIcon class="w-4 h-4 mx-1"/>
                                     comments
@@ -204,7 +204,7 @@ function sendCommentReaction(comment) {
                         </DisclosurePanel>
                     </Disclosure>
                 </div>
-                <EditDeleteDropdown class="self-start" :post="post" :comment="comment" @edit="startCommentEdit(comment)"
+                <EditDeleteDropdown class="dark:text-white self-start" :post="post" :comment="comment" @edit="startCommentEdit(comment)"
                                     @delete="deleteComment(comment)"/>
             </div>
         </div>

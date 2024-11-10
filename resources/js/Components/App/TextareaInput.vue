@@ -50,7 +50,7 @@ defineExpose({focus: () => input.value.focus()});
 
 <template>
     <textarea
-        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+        class="dark:border-slate-600 border-r-none border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
         v-model="model"
         @input="onInputChange"
         ref="input"

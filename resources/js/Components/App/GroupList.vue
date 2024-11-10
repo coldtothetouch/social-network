@@ -18,7 +18,7 @@ function onGroupCreated(data) {
 </script>
 
 <template>
-    <div class="p-5 bg-white rounded-md shadow overflow-hidden flex flex-col">
+    <div class="p-5 dark:bg-slate-800 dark:text-white bg-white rounded-md shadow overflow-hidden flex flex-col">
         <div class="lg:hidden flex-1 block">
             <Disclosure v-slot="{ open }">
                 <div class="flex gap-3">

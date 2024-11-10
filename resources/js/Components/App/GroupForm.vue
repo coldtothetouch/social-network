@@ -33,15 +33,15 @@ const editorConfig = {
 <template>
     <div class="flex flex-col w-full gap-3 mb-3">
         <div>
-            <InputLabel>Group name</InputLabel>
-            <TextInput v-model="form.name"/>
+            <InputLabel class="dark:text-white text-xl pb-2">Group name</InputLabel>
+            <TextInput class="dark:bg-slate-700" v-model="form.name"/>
         </div>
-        <div class="flex items-center gap-2">
-            <Checkbox v-model:checked="form.private"/>
+        <div class="flex items-center gap-2 dark:text-white">
+            <Checkbox class="dark:bg-slate-700" v-model:checked="form.private"/>
             Private group
         </div>
         <div>
-            <InputLabel>About group</InputLabel>
+            <InputLabel class="dark:text-white text-xl pb-2">About group</InputLabel>
             <ckeditor :editor="editor" v-model="form.description" :config="editorConfig"/>
         </div>
     </div>

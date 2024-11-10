@@ -54,7 +54,7 @@ const postBody = computed(() => props.post.body.replace(
 </script>
 
 <template>
-    <div class="border p-5 rounded-lg bg-white shadow">
+    <div class="dark:bg-slate-800 dark:text-white dark:border-slate-700 border p-5 rounded-lg bg-white shadow">
         <div class="flex justify-between  items-center mb-3">
             <PostUserHeader :post="post"/>
             <EditDeleteDropdown :post="post"
@@ -78,17 +78,17 @@ const postBody = computed(() => props.post.body.replace(
         <Disclosure v-slot="{ open }">
             <div class="flex gap-5 justify-between mt-5 text-gray-600">
                 <button @click="sendReaction"
-                        class="flex flex-1 gap-1 justify-center items-center border py-5 px-10 rounded-full hover:bg-gray-100"
-                        :class="post.current_user_has_reaction ? 'text-indigo-500 bg-indigo-100 hover:bg-indigo-200' : ''">
-                    <HandThumbUpIcon class="h-7 w-7 text-gray-400"
+                        class="dark:border-slate-600 dark:hover:bg-slate-700 dark:text-white flex flex-1 gap-1 justify-center items-center border py-5 px-10 rounded-full hover:bg-gray-100"
+                        :class="post.current_user_has_reaction ? 'dark:bg-slate-700 text-indigo-500 bg-indigo-100 hover:bg-indigo-200' : ''">
+                    <HandThumbUpIcon class="h-7 w-7 text-gray-400 dark:text-white"
                                      :class="post.current_user_has_reaction ? 'text-indigo-500' : ''"/>
                     <span class="mr-2">{{ post.reactions_count }}</span>
                     {{ post.current_user_has_reaction ? 'Unlike' : 'Like' }}
                 </button>
                 <DisclosureButton
-                    class="flex flex-1 justify-center items-center gap-1 border py-5 px-10 rounded-full hover:bg-gray-100"
+                    class="dark:border-slate-600 dark:hover:bg-slate-700 dark:text-white flex flex-1 justify-center items-center gap-1 border py-5 px-10 rounded-full hover:bg-gray-100"
                 >
-                    <ChatBubbleLeftRightIcon class="h-7 w-7 text-gray-400"/>
+                    <ChatBubbleLeftRightIcon class="h-7 w-7 text-gray-400 dark:text-white"/>
                     <span class="mr-2">{{ post.comments_count }}</span>
                     Comment
                 </DisclosureButton>

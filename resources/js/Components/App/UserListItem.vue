@@ -24,7 +24,8 @@ const emit = defineEmits(['approve', 'reject', 'roleChange', 'userKick'])
 </script>
 
 <template>
-    <div class="flex gap-3 items-center py-3 px-5 hover:bg-gray-200 rounded-md border">
+    <div
+        class="dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700 flex gap-3 items-center py-3 px-5 hover:bg-gray-200 rounded-md border">
         <Link :href="route('profile.index', user)">
             <img :src="user.avatar_path" class="size-[45px] rounded-full" alt="avatar">
         </Link>
@@ -38,11 +39,12 @@ const emit = defineEmits(['approve', 'reject', 'roleChange', 'userKick'])
             </div>
             <div v-if="showUserRoleDropdown">
                 <select :disabled="disableUserRoleDropdown" @change="$emit('roleChange', user, $event.target.value)"
-                    class="rounded-md border-0 py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm/6">
+                        class="dark:bg-slate-700 dark:text-white dark:border-slate-600 rounded-md py-1 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm/6">
                     <option :selected="user.role === 'admin'">admin</option>
                     <option :selected="user.role === 'subscriber'">subscriber</option>
                 </select>
-                <button @click="$emit('userKick', user)" :disabled="disableUserRoleDropdown" class="text-white cursor-pointer ml-3 text-xs py-1.5 px-2 rounded bg-red-500 hover:bg-red-600 disabled:bg-red-300">
+                <button @click="$emit('userKick', user)" :disabled="disableUserRoleDropdown"
+                        class="text-white cursor-pointer ml-3 text-xs py-1.5 px-2 rounded bg-red-500 hover:bg-red-600 disabled:bg-red-400">
                     Kick
                 </button>
             </div>

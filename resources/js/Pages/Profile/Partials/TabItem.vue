@@ -10,8 +10,8 @@ defineProps({
         :class="[
           'px-3 py-2 outline-none',
           selected
-            ? 'bg-white text-blue-500 border-b-2 border-blue-500'
-            : 'text-gray-500',
+            ? 'dark:bg-slate-700 dark:text-white bg-white text-blue-500 border-b-2 border-blue-500'
+            : 'dark:text-white text-gray-500',
         ]"
     >
         {{ text }}

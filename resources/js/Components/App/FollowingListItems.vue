@@ -13,7 +13,7 @@ const search = ref('');
 </script>
 
 <template>
-    <TextInput :model-value="search" placeholder="Search for friends" class="w-full my-5"/>
+    <TextInput :model-value="search" placeholder="Search for friends" class="dark:bg-slate-700 w-full my-5"/>
     <div class="h-[200px] lg:flex-1 overflow-y-auto">
         <div v-if="followings.length">
             <UserListItem v-for="user in followings" :user="user"/>

@@ -27,8 +27,8 @@ function showCreatePostModal() {
 </script>
 
 <template>
-    <div class="bg-white rounded-md shadow p-5 mb-5">
-        <div @click="showCreatePostModal" class="w-full overflow-hidden border border-2 py-2 px-3 rounded-lg text-gray-500">
+    <div class="dark:bg-slate-800 bg-white rounded-md shadow p-5 mb-5">
+        <div @click="showCreatePostModal" class="dark:bg-slate-700 dark:border-slate-600 w-full overflow-hidden border border-2 py-2 px-3 rounded-lg text-gray-500">
             Click here to create a new post
         </div>
         <PostModal :post="post" :group="group" v-model="showModal"/>
