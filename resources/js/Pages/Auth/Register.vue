@@ -31,7 +31,7 @@ const submit = () => {
                 <TextInput
                     id="name"
                     type="text"
-                    class="dark:text-black mt-1 block w-full"
+                    class="dark:bg-slate-700 mt-1 block w-full"
                     v-model="form.name"
                     required
                     autofocus
@@ -47,7 +47,7 @@ const submit = () => {
                 <TextInput
                     id="email"
                     type="email"
-                    class="dark:text-black mt-1 block w-full"
+                    class="dark:bg-slate-700 mt-1 block w-full"
                     v-model="form.email"
                     required
                     autocomplete="username"
@@ -62,7 +62,7 @@ const submit = () => {
                 <TextInput
                     id="password"
                     type="password"
-                    class="dark:text-black mt-1 block w-full"
+                    class="dark:bg-slate-700 mt-1 block w-full"
                     v-model="form.password"
                     required
                     autocomplete="new-password"
@@ -77,7 +77,7 @@ const submit = () => {
                 <TextInput
                     id="password_confirmation"
                     type="password"
-                    class="dark:text-black mt-1 block w-full"
+                    class="dark:bg-slate-700 mt-1 block w-full"
                     v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"

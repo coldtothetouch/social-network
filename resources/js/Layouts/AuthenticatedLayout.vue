@@ -68,7 +68,7 @@ function toggleDarkMode() {
                             Dark Mode
                         </div>
                         <div v-else @click="toggleDarkMode()"
-                             class="flex items-center pr-3 text-nowrap text-gray-100 text-black ml-5 rounded-full cursor-pointer bg-white">
+                             class="flex items-center pr-3 text-nowrap text-gray-100 dark:text-black ml-5 rounded-full cursor-pointer bg-white">
                             <SunIcon class="size-8 p-1"/>
                             Light Mode
                         </div>
