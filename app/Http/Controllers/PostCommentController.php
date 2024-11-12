@@ -50,7 +50,7 @@ class PostCommentController extends Controller
     {
         if ($comment->isOwnedByAuthUser() || $comment->post->group?->authUserIsAdmin()) {
             $comment->delete();
-            return back();
+            return response([]);
         }
 
         return response("You don't have permission to delete this comment", 403);
