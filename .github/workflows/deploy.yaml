@@ -36,6 +36,12 @@ jobs:
             git pull
             php83 ~/composer.phar install
             php artisan migrate --force
+      - name: Install SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -t rsa ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: Copy build files to server
         run: |
-          rsync -r -e "ssh -i ${{ secrets.SSH_KEY }}" ${{ github.workspace }}/public/build/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/www/dirtyanimals.ru/public/build
+          rsync -r -e "ssh" ${{ github.workspace }}/public/build/ ${{ secrets.SSH_USERNAME }}@${{ secrets.SSH_HOST }}:~/www/dirtyanimals.ru/public/build
