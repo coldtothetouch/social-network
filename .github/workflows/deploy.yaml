@@ -34,7 +34,7 @@ jobs:
           script: |
             cd www/dirtyanimals.ru
             git pull
-            ~/composer install
+            php83 ~/composer.phar i
             php artisan migrate --force
       - name: Install SSH key
         run: |
