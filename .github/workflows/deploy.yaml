@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 22
       - name: Copy .env
         run: cp .env.example .env
       - name: Install composer Dependencies
@@ -34,7 +34,7 @@ jobs:
           script: |
             cd www/dirtyanimals.ru
             git pull
-            php composer.phar install
+            composer install
             php artisan migrate --force
       - name: Install SSH key
         run: |
