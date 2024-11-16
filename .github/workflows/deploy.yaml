@@ -30,7 +30,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
-          port: 443
           script_stop: true
           script: |
             cd www/dirtyanimals.ru
